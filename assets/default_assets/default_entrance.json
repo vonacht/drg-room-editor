@@ -1,0 +1,106 @@
+{
+    "$type": "UAssetAPI.ExportTypes.NormalExport, UAssetAPI",
+    "Data": [
+        {
+            "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+            "StructType": "Vector",
+            "SerializeNone": true,
+            "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+            "SerializationControl": "NoExtension",
+            "Operation": "None",
+            "Name": "Location",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension",
+            "Value": [
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Structs.VectorPropertyData, UAssetAPI",
+                    "Name": "Location",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": {
+                        "$type": "UAssetAPI.UnrealTypes.FVector, UAssetAPI",
+                        "X": 2143.908935546875,
+                        "Y": -556.8229370117188,
+                        "Z": -70.0
+                    }
+                }
+            ]
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+            "StructType": "Rotator",
+            "SerializeNone": true,
+            "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+            "SerializationControl": "NoExtension",
+            "Operation": "None",
+            "Name": "Direction",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension",
+            "Value": [
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Structs.RotatorPropertyData, UAssetAPI",
+                    "Name": "Direction",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": {
+                        "$type": "UAssetAPI.UnrealTypes.FRotator, UAssetAPI",
+                        "Pitch": "+0",
+                        "Yaw": -24.999799728393555,
+                        "Roll": "+0"
+                    }
+                }
+            ]
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.EnumPropertyData, UAssetAPI",
+            "EnumType": "ECaveEntranceType",
+            "InnerType": null,
+            "Name": "EntranceType",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension",
+            "Value": "ECaveEntranceType::Exit"
+        }
+    ],
+    "ObjectGuid": null,
+    "SerializationControl": "NoExtension",
+    "Operation": "None",
+    "ObjectName": "EntranceFeature_39",
+    "OuterIndex": 13,
+    "ClassIndex": -1,
+    "SuperIndex": 0,
+    "TemplateIndex": -6,
+    "ObjectFlags": "RF_NoFlags",
+    "SerialSize": 175,
+    "SerialOffset": 6123,
+    "ScriptSerializationStartOffset": 0,
+    "ScriptSerializationEndOffset": 0,
+    "bForcedExport": false,
+    "bNotForClient": false,
+    "bNotForServer": false,
+    "PackageGuid": "{00000000-0000-0000-0000-000000000000}",
+    "IsInheritedInstance": false,
+    "PackageFlags": "PKG_None",
+    "bNotAlwaysLoadedForEditorGame": true,
+    "bIsAsset": false,
+    "GeneratePublicHash": false,
+    "SerializationBeforeSerializationDependencies": [],
+    "CreateBeforeSerializationDependencies": [],
+    "SerializationBeforeCreateDependencies": [
+        -1,
+        -6
+    ],
+    "CreateBeforeCreateDependencies": [
+        23
+    ],
+    "Extras": ""
+}

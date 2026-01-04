@@ -1,0 +1,88 @@
+{
+  "$type": "UAssetAPI.ExportTypes.NormalExport, UAssetAPI",
+  "Data": [
+    {
+      "$type": "UAssetAPI.PropertyTypes.Objects.ArrayPropertyData, UAssetAPI",
+      "ArrayType": "ObjectProperty",
+      "Name": "RoomFeatures",
+      "ArrayIndex": 0,
+      "IsZero": false,
+      "PropertyTagFlags": "None",
+      "PropertyTagExtensions": "NoExtension",
+      "Value": []
+    },
+    {
+      "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+      "Value": 4500.0,
+      "Name": "Bounds",
+      "ArrayIndex": 0,
+      "IsZero": false,
+      "PropertyTagFlags": "None",
+      "PropertyTagExtensions": "NoExtension"
+    },
+    {
+      "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+      "StructType": "GameplayTagContainer",
+      "SerializeNone": true,
+      "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+      "SerializationControl": "NoExtension",
+      "Operation": "None",
+      "Name": "RoomTags",
+      "ArrayIndex": 0,
+      "IsZero": false,
+      "PropertyTagFlags": "None",
+      "PropertyTagExtensions": "NoExtension",
+      "Value": [
+        {
+          "$type": "UAssetAPI.PropertyTypes.Structs.GameplayTagContainerPropertyData, UAssetAPI",
+          "Name": "RoomTags",
+          "ArrayIndex": 0,
+          "IsZero": false,
+          "PropertyTagFlags": "None",
+          "PropertyTagExtensions": "NoExtension",
+          "Value": [
+            "Rooms.Linear.Big"
+          ]
+        }
+      ]
+    }
+  ],
+  "ObjectGuid": null,
+  "SerializationControl": "NoExtension",
+  "Operation": "None",
+  "ObjectName": "RMA_BigCave",
+  "OuterIndex": 0,
+  "ClassIndex": -5,
+  "SuperIndex": 0,
+  "TemplateIndex": -12,
+  "ObjectFlags": "RF_Public, RF_Standalone, RF_Transactional",
+  "SerialSize": 163,
+  "SerialOffset": 14419,
+  "ScriptSerializationStartOffset": 0,
+  "ScriptSerializationEndOffset": 0,
+  "bForcedExport": false,
+  "bNotForClient": false,
+  "bNotForServer": false,
+  "PackageGuid": "{00000000-0000-0000-0000-000000000000}",
+  "IsInheritedInstance": false,
+  "PackageFlags": "PKG_None",
+  "bNotAlwaysLoadedForEditorGame": true,
+  "bIsAsset": true,
+  "GeneratePublicHash": false,
+  "SerializationBeforeSerializationDependencies": [],
+  "CreateBeforeSerializationDependencies": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    12,
+    -13
+  ],
+  "SerializationBeforeCreateDependencies": [
+    -5,
+    -12
+  ],
+  "CreateBeforeCreateDependencies": [],
+  "Extras": ""
+}

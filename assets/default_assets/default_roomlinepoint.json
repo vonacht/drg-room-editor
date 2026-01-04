@@ -1,0 +1,125 @@
+{
+    "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+    "StructType": "RoomLinePoint",
+    "SerializeNone": true,
+    "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+    "SerializationControl": "NoExtension",
+    "Operation": "None",
+    "Name": "Points",
+    "ArrayIndex": 0,
+    "IsZero": false,
+    "PropertyTagFlags": "None",
+    "PropertyTagExtensions": "NoExtension",
+    "Value": [
+        {
+            "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+            "StructType": "Vector",
+            "SerializeNone": true,
+            "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+            "SerializationControl": "NoExtension",
+            "Operation": "None",
+            "Name": "Location",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension",
+            "Value": [
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Structs.VectorPropertyData, UAssetAPI",
+                    "Name": "Location",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": {
+                        "$type": "UAssetAPI.UnrealTypes.FVector, UAssetAPI",
+                        "X": 3469.58984375,
+                        "Y": 579.04736328125,
+                        "Z": -900.60302734375
+                    }
+                }
+            ]
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 600.0,
+            "Name": "HRange",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 900.0,
+            "Name": "VRange",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 100.0,
+            "Name": "CielingNoiseRange",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 100.0,
+            "Name": "WallNoiseRange",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 100.0,
+            "Name": "FloorNoiseRange",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 900.0,
+            "Name": "Cielingheight",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": 1.0,
+            "Name": "HeightScale",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": "+0",
+            "Name": "FloorDepth",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        },
+        {
+            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+            "Value": "-0",
+            "Name": "FloorAngle",
+            "ArrayIndex": 0,
+            "IsZero": false,
+            "PropertyTagFlags": "None",
+            "PropertyTagExtensions": "NoExtension"
+        }
+    ]
+}

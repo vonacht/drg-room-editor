@@ -1,0 +1,57 @@
+{
+    "Name": "RMA_Spiral",
+    "Bounds": 4500,
+    "Tags": [
+        "Rooms.Linear.Small"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": [
+            {
+                "Location": {
+                    "X": 0,
+                    "Y": 0,
+                    "Z": 0
+                },
+                "HRange": 600,
+                "VRange": 400
+            },
+            {
+                "Location": {
+                    "X": 4000,
+                    "Y": 0,
+                    "Z": 0
+                },
+                "HRange": 600,
+                "VRange": 400
+            }
+        ]
+    },
+    "Entrances": {
+        "Entrance_1": {
+            "Location": {
+                "X": 0,
+                "Y": 0,
+                "Z": 0
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 0,
+                "Roll": 0
+            }
+        },
+        "Entrance_2": {
+            "Location": {
+                "X": 4000,
+                "Y": 0,
+                "Z": 0
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 0,
+                "Roll": 0
+            }
+        }
+    }
+}
