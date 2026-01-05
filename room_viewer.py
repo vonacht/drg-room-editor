@@ -1,44 +1,46 @@
-import tkinter as tk
 import numpy as np
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.figure import Figure
 from more_itertools import sliding_window
-from collections import namedtuple
 from scipy.spatial.transform import Rotation as R
 
-Hemisphere = namedtuple('Hemisphere', ['center', 'radius', 'height'])
-Entrance = namedtuple('Entrance', ['location', 'entrance_type', 'orientation'])
+DEFAULT_ENTRANCE_VECTOR = np.array((500, 0, 0))
 
 
 def rotate_vector(v, roll, pitch, yaw):
-    print(v, yaw, pitch, roll)
-    r = R.from_euler('zyx', [yaw, pitch, roll], degrees=True)  # yaw, pitch, roll
+    """This method is used to apply the rotator defined in the Entrances to a default vector v."""
+    r = R.from_euler("zyx", [yaw, pitch, roll], degrees=True)  # yaw, pitch, roll
     return r.apply(v)
 
-def create_oval(S: Hemisphere) -> tuple:
-    center, a, b, c = S.center, S.radius, S.radius, S.height
-    # Spherical coordinates
-    phi = np.linspace(0, np.pi/2, 30)     # top half only
-    theta = np.linspace(0, 2*np.pi, 60)
+
+def create_ellipsoid(S: dict) -> tuple:
+    center = S["Location"]["X"], S["Location"]["Y"], S["Location"]["Z"]
+    ra, rb, height = S["HRange"], S["HRange"], S["VRange"]
+    # Spherical coordinates:
+    phi = np.linspace(0, np.pi / 2, 30)  # top half only
+    theta = np.linspace(0, 2 * np.pi, 60)
     phi, theta = np.meshgrid(phi, theta)
-
-    # Parametric equations
-    x = center[0] + a * np.sin(phi) * np.cos(theta)
-    y = center[1] + b * np.sin(phi) * np.sin(theta)
-    z = center[2] + c * np.cos(phi)
-
+    # Parametric equations:
+    x = center[0] + ra * np.sin(phi) * np.cos(theta)
+    y = center[1] + rb * np.sin(phi) * np.sin(theta)
+    z = center[2] + height * np.cos(phi)
     return x, y, z
 
-def create_tangent_lines(S1: Hemisphere, S2: Hemisphere) -> list:
-    C1, C2, r1, r2, h1, h2 = S1.center, S2.center, S1.radius, S2.radius, S1.height, S2.height
-    C1, C2 = np.array(C1), np.array(C2)
+
+def create_tangent_lines(S1: dict, S2: dict) -> list:
+    """This method will calculate the tangent lines between pairs of
+    FLoodFillLines. These are plotted in the main plot to show that the
+    elements of the same Line are connected together.
+    """
+    C1 = np.array((S1["Location"]["X"], S1["Location"]["Y"], S1["Location"]["Z"]))
+    C2 = np.array((S2["Location"]["X"], S2["Location"]["Y"], S2["Location"]["Z"]))
+    r1, r2 = S1["HRange"], S2["HRange"]
+    h1, h2 = S1["VRange"], S2["VRange"]
     tangents = []
-    # Top tangent line:
+    # Top tangent line connecting the peaks;
     x = [C1[0], C2[0]]
     y = [C1[1], C2[1]]
     z = [C1[2] + h1, C2[2] + h2]
     tangents.append((x, y, z))
-    # Lower tangent line:
+    # Lower two tangent lines connecting the base circles:
     dvec = C2 - C1
     dxy = np.linalg.norm(dvec[:2])
 
@@ -58,24 +60,6 @@ def create_tangent_lines(S1: Hemisphere, S2: Hemisphere) -> list:
 
     return tangents
 
-def build_hemisphere(hdata: dict):
-    return Hemisphere((hdata["Location"]["X"], hdata["Location"]['Y'], hdata["Location"]['Z']),
-                      hdata["HRange"],
-                      hdata["VRange"])
-
-def build_entrance(edata: dict):
-    return Entrance((edata["Location"]["X"], edata["Location"]["Y"], edata["Location"]["Z"]),
-                     edata["Type"],
-                     (edata["Direction"]["Roll"], edata["Direction"]["Pitch"], edata["Direction"]["Yaw"]))
-
-
-def parse_room_json(room_json: dict):
-    floodfilllines = []
-    for ffill in room_json["FloodFillLines"]:
-        line = [build_hemisphere(l) for l in room_json["FloodFillLines"][ffill]]
-        floodfilllines.append(line)
-    entrances = [build_entrance(v) for _, v in room_json["Entrances"].items()]
-    return floodfilllines, entrances
 
 def set_axes_equal(ax):
     x_limits = ax.get_xlim3d()
@@ -86,55 +70,85 @@ def set_axes_equal(ax):
     y_mid = (y_limits[0] + y_limits[1]) / 2
     z_mid = (z_limits[0] + z_limits[1]) / 2
 
-    radius = max(
-        x_limits[1] - x_limits[0],
-        y_limits[1] - y_limits[0],
-        z_limits[1] - z_limits[0],
-    ) / 2
+    radius = (
+        max(
+            x_limits[1] - x_limits[0],
+            y_limits[1] - y_limits[0],
+            z_limits[1] - z_limits[0],
+        )
+        / 2
+    )
 
     ax.set_xlim(x_mid - radius, x_mid + radius)
     ax.set_ylim(y_mid - radius, y_mid + radius)
     ax.set_zlim(z_mid - radius, z_mid + radius)
 
-def room_plotter_3d(ax, canvas, room_json, show_entrances, show_ffill):
 
+def room_plotter_3d(ax, canvas, plot_ctx: dict):
+    """This method receives the axes and canvas from the main GUI in main.py and
+    a context object with:
+        + The JSON dict defining the room.
+        + Boolean switches telling which features we need to plot.
+    and it plots the room.
+    """
+    room_json = plot_ctx["room"]
     ax.cla()
-    floodfilllines, entrances = parse_room_json(room_json)
-
-    if show_ffill:
-        for line in floodfilllines:
-            for c in line:
-                # Draw the circles:
-                x, y, z = create_oval(c)
-                ax.plot_wireframe(x, y, z, color='gray', linewidth=0.5, cstride=5, rstride=5)
-            for a, b in sliding_window(line, 2):
-                p = create_tangent_lines(a, b)
-                for tangent in p:
+    # 1. We plot the FLoodFillLines, if ctx.show_ffill is true:
+    if plot_ctx["show_ffill"]:
+        for _, line in room_json["FloodFillLines"].items():
+            for ffill in line:
+                # Draw the circles in wireframe:
+                x, y, z = create_ellipsoid(ffill)
+                ax.plot_wireframe(
+                    x, y, z, color="gray", linewidth=0.5, cstride=5, rstride=5
+                )
+            # For every pair of FLoodFillLines, draw the tangent lines to visually show that they
+            # are connected:
+            for ffill_1, ffill_2 in sliding_window(line, 2):
+                tangents = create_tangent_lines(ffill_1, ffill_2)
+                for tangent in tangents:
                     x, y, z = tangent
-                    ax.plot(x, y, z, linewidth=0.6, color = 'gray')
-
-    if show_entrances:
-        for entrance in entrances:
-            x, y, z = entrance.location
-            match entrance.entrance_type:
-                case 'Entrance':
-                    color = 'blue'
-                case 'Exit':
-                    color = 'red'
-                case 'Secondary':
-                    color = 'orange'
+                    ax.plot(x, y, z, linewidth=0.6, color="gray")
+    # 2. We plot the Entrances, if ctx.show_entrances is true:
+    if plot_ctx["show_entrances"]:
+        for _, entrance in room_json["Entrances"].items():
+            x, y, z = (
+                entrance["Location"]["X"],
+                entrance["Location"]["Y"],
+                entrance["Location"]["Z"],
+            )
+            match entrance["Type"]:
+                case "Entrance":
+                    color = "blue"
+                case "Exit":
+                    color = "red"
+                case "Secondary":
+                    color = "orange"
                 case _:
                     print(f"Unknown entrance type: {entrance.entrance_type}")
-                    color = 'black'
-            ax.scatter(x, y, z, color=color, s = 15)
+                    color = "black"
+            # Here we plot the entrance locations as a sphere with the color defined in the previous match case:
+            ax.scatter(x, y, z, color=color, s=15)
+            # Here we apply the rotator vector defined in the entrance to a vector [500, 0, 0] which is the default:
+            rotator = (
+                entrance["Direction"]["Roll"],
+                entrance["Direction"]["Pitch"],
+                entrance["Direction"]["Yaw"],
+            )
+            rotated_vector = rotate_vector(DEFAULT_ENTRANCE_VECTOR, *rotator)
+            # And we plot the vector itself with an arrow:
+            ax.quiver(
+                x,
+                y,
+                z,
+                rotated_vector[0],
+                rotated_vector[1],
+                rotated_vector[2],
+                color="green",
+                linewidth=2,
+            )
 
-            v = rotate_vector(np.array([500, 0, 0]), *entrance.orientation)
-            print(v)
-            
-            ax.quiver(entrance.location[0], entrance.location[1], entrance.location[2],
-                  v[0], v[1], v[2],
-                  color='green', linewidth=2)
-
+    # 3. Some plotting directives:
     set_axes_equal(ax)
     ax.xaxis.pane.set_visible(False)
     ax.yaxis.pane.set_visible(False)
@@ -145,5 +159,4 @@ def room_plotter_3d(ax, canvas, room_json, show_entrances, show_ffill):
     ax.set_title(room_json["Name"])
 
     canvas.draw_idle()
-    ax.set_box_aspect([1,1,1])
-
+    ax.set_box_aspect([1, 1, 1])
