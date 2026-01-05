@@ -5,8 +5,6 @@ from room_parser import validate_room
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from pathlib import Path
-import numpy as np
 
 from jsonschema import ValidationError
 from room_viewer import room_plotter_3d
@@ -41,16 +39,12 @@ class App(tk.Tk):
         controls = ttk.Frame(left_column, padding=(5, 5))
         controls.grid(row=0, column=0, sticky="ew")
 
-        ttk.Button(
-            controls,
-            text="Reset Plot View",
-            command=self.reset_ax_view
-        ).grid(row=0, column=0, padx=10)
+        ttk.Button(controls, text="Reset Plot View", command=self.reset_ax_view).grid(
+            row=0, column=0, padx=10
+        )
 
         self.save_button = ttk.Button(
-            controls,
-            text="Save UAsset",
-            command=self.try_saving_uasset
+            controls, text="Save UAsset", command=self.try_saving_uasset
         )
         self.save_button.grid(row=0, column=1, padx=10)
 
@@ -59,7 +53,7 @@ class App(tk.Tk):
             controls,
             text="Show Entrances",
             variable=self.var_entrances,
-            command=self.try_update_from_json
+            command=self.try_update_from_json,
         ).grid(row=0, column=3, padx=10)
 
         self.var_ffill = tk.BooleanVar(value=True)
@@ -67,7 +61,7 @@ class App(tk.Tk):
             controls,
             text="Show FloodFillLines",
             variable=self.var_ffill,
-            command=self.try_update_from_json
+            command=self.try_update_from_json,
         ).grid(row=0, column=4, padx=10)
         # ---- Vertical split: editor / status ----
         left_pane = ttk.Panedwindow(left_column, orient=tk.VERTICAL)
@@ -78,10 +72,7 @@ class App(tk.Tk):
         self.editor = tk.Text(editor_frame, wrap=tk.NONE)
         self.editor.pack(fill=tk.BOTH, expand=True)
 
-        self.editor.insert(
-            tk.END,
-            """{}"""
-        )
+        self.editor.insert(tk.END, """{}""")
 
         left_pane.add(editor_frame, weight=4)
 
@@ -92,7 +83,7 @@ class App(tk.Tk):
             height=4,
             wrap=tk.WORD,
             state=tk.DISABLED,
-            background="#f4f4f4"
+            background="#f4f4f4",
         )
         self.status.pack(fill=tk.BOTH, expand=True)
 
@@ -102,15 +93,13 @@ class App(tk.Tk):
         fig = Figure(dpi=100)
         self.ax = fig.add_subplot(111, projection="3d")
         self.canvas = FigureCanvasTkAgg(fig, master=main)
-        self.canvas.get_tk_widget().grid(
-            row=0, column=1, sticky="nsew", padx=5, pady=5
-        )
+        self.canvas.get_tk_widget().grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
         # ---- Bindings ----
         self.editor.bind("<<Modified>>", self.on_text_change)
         self.editor.edit_modified(False)
 
-        #TODO: add default plot state here if needed 
+        # TODO: add default plot state here if needed
         self.set_status("Ready")
 
     # ---------- Text handling ----------
@@ -139,7 +128,7 @@ class App(tk.Tk):
         except json.JSONDecodeError as e:
             self.set_invalid_state(f"JSON error: {e.msg} (line {e.lineno})")
             return
-        
+
         # Check for valid JSON room schema:
         try:
             validate_room(data)
@@ -151,7 +140,12 @@ class App(tk.Tk):
 
         self.set_valid_state()
         # TODO: Add default plot state here
-        room_plotter_3d(self.ax, self.canvas, data, self.var_entrances.get(), self.var_ffill.get())
+        self.plot_context = {
+            "room": self.room_json,
+            "show_ffill": self.var_ffill.get(),
+            "show_entrances": self.var_entrances.get(),
+        }
+        room_plotter_3d(self.ax, self.canvas, self.plot_context)
 
     # ---------- Status + feedback ----------
     def set_status(self, message):
@@ -178,6 +172,7 @@ class App(tk.Tk):
 
     def try_saving_uasset(self):
         build_json_and_uasset(self.room_json)
+
 
 if __name__ == "__main__":
     App().mainloop()
