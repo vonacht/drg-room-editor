@@ -9,25 +9,31 @@ schema = {
         "FloodFillLines": {
             "type": "object",
             "additionalProperties": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "Location": {
+                "type": "object",
+                "properties": {
+                    "Points": {
+                        "type": "array",
+                        "items": {
                             "type": "object",
                             "properties": {
-                                "X": {"type": "number"},
-                                "Y": {"type": "number"},
-                                "Z": {"type": "number"},
+                                "location": {
+                                    "type": "object",
+                                    "properties": {
+                                        "x": {"type": "number"},
+                                        "y": {"type": "number"},
+                                        "z": {"type": "number"},
+                                    },
+                                    "required": ["x", "y", "z"],
+                                },
+                                "hrange": {"type": "number"},
+                                "vrange": {"type": "number"},
                             },
-                            "required": ["X", "Y", "Z"],
+                            "required": ["Location", "HRange", "VRange"],
                         },
-                        "HRange": {"type": "number"},
-                        "VRange": {"type": "number"},
                     },
-                    "required": ["Location", "HRange", "VRange"],
-                    "additionalProperties": False,
+                    "RoomFeatures": {"type": "array", "item": "string"}
                 },
+                "required": ["Points"]
             },
         },
         "Entrances": {
@@ -59,9 +65,15 @@ schema = {
                     },
                 },
                 "required": ["Location", "Type", "Direction"],
-                "additionalProperties": False,
             },
         },
+        "RandomSelectors": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "item": "string"
+            }
+        }
     },
     "required": ["Name", "Tags", "Bounds", "FloodFillLines", "Entrances"],
 }

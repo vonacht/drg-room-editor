@@ -96,6 +96,7 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
     # 1. We plot the FLoodFillLines, if ctx.show_ffill is true:
     if plot_ctx["show_ffill"]:
         for _, line in room_json["FloodFillLines"].items():
+            line = line["Points"]
             for ffill in line:
                 # Draw the circles in wireframe:
                 x, y, z = create_ellipsoid(ffill)
@@ -105,8 +106,7 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
             # For every pair of FLoodFillLines, draw the tangent lines to visually show that they
             # are connected:
             for ffill_1, ffill_2 in sliding_window(line, 2):
-                tangents = create_tangent_lines(ffill_1, ffill_2)
-                for tangent in tangents:
+                for tangent in create_tangent_lines(ffill_1, ffill_2):
                     x, y, z = tangent
                     ax.plot(x, y, z, linewidth=0.6, color="gray")
     # 2. We plot the Entrances, if ctx.show_entrances is true:
