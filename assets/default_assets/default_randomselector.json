@@ -1,0 +1,72 @@
+{
+            "$type": "UAssetAPI.ExportTypes.NormalExport, UAssetAPI",
+            "Data": [
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Objects.IntPropertyData, UAssetAPI",
+                    "Name": "Min",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": 1
+                },
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Objects.IntPropertyData, UAssetAPI",
+                    "Name": "Max",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": 1
+                },
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Objects.ArrayPropertyData, UAssetAPI",
+                    "ArrayType": "ObjectProperty",
+                    "Name": "RoomFeatures",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": []
+                }
+            ],
+            "ObjectGuid": null,
+            "SerializationControl": "NoExtension",
+            "Operation": "None",
+            "ObjectName": "RandomSelector_1",
+            "OuterIndex": 42,
+            "ClassIndex": -4,
+            "SuperIndex": 0,
+            "TemplateIndex": -11,
+            "ObjectFlags": "RF_NoFlags",
+            "SerialSize": 119,
+            "SerialOffset": 35020,
+            "ScriptSerializationStartOffset": 0,
+            "ScriptSerializationEndOffset": 0,
+            "bForcedExport": false,
+            "bNotForClient": false,
+            "bNotForServer": false,
+            "PackageGuid": "{00000000-0000-0000-0000-000000000000}",
+            "IsInheritedInstance": false,
+            "PackageFlags": "PKG_None",
+            "bNotAlwaysLoadedForEditorGame": true,
+            "bIsAsset": false,
+            "GeneratePublicHash": false,
+            "SerializationBeforeSerializationDependencies": [],
+            "CreateBeforeSerializationDependencies": [
+                5,
+                16,
+                17
+            ],
+            "SerializationBeforeCreateDependencies": [
+                -4,
+                -11
+            ],
+            "CreateBeforeCreateDependencies": [
+                42
+            ],
+            "Extras": ""
+        }
