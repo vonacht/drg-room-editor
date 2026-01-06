@@ -9,10 +9,11 @@ from matplotlib.figure import Figure
 from jsonschema import ValidationError
 from room_viewer import room_plotter_3d
 from json_builder import build_json_and_uasset
+import argparse
 
 
 class App(tk.Tk):
-    def __init__(self):
+    def __init__(self, text="{}"):
         super().__init__()
 
         self.title("DRG Custom Room Editor")
@@ -72,7 +73,7 @@ class App(tk.Tk):
         self.editor = tk.Text(editor_frame, wrap=tk.NONE)
         self.editor.pack(fill=tk.BOTH, expand=True)
 
-        self.editor.insert(tk.END, """{}""")
+        self.editor.insert(tk.END, text)
 
         left_pane.add(editor_frame, weight=4)
 
@@ -175,4 +176,22 @@ class App(tk.Tk):
 
 
 if __name__ == "__main__":
-    App().mainloop()
+
+    parser = argparse.ArgumentParser(description="DRG Custom Room Editor")
+    parser.add_argument(
+        "filename",
+        nargs="?",            # makes it optional
+        default=None,          # value if not provided
+        help="Optional input filename"
+    )
+
+    args = parser.parse_args()
+
+    if args.filename is not None:
+        with open(args.filename, 'r') as f:
+            json_from_file = json.load(f)
+            app = App(text=json.dumps(json_from_file, indent=4))
+            app.mainloop()
+    else:
+        App().mainloop()
+
