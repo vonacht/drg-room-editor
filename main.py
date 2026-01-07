@@ -102,6 +102,8 @@ class App(tk.Tk):
 
         # TODO: add default plot state here if needed
         self.set_status("Ready")
+        if text != "{}":
+            self.try_update_from_json()
 
     # ---------- Text handling ----------
     def on_text_change(self, event):
