@@ -1,25 +1,75 @@
-from collections import namedtuple
+from dataclasses import dataclass
 import copy
 import json
 
 from uassetgen import JSON_to_uasset
 
-Hemisphere = namedtuple("Hemisphere", ["center", "radius", "height"])
-Entrance = namedtuple("Entrance", ["location", "entrance_type", "orientation"])
+@dataclass
+class FloodFillLine:
+    location: tuple
+    hrange: float 
+    vrange: float 
+    ceiling_height: float = 900 
+    floor_depth: float = 0 
+    floor_angle: float = 0
+    ceiling_noise_range: float = 100
+    wall_noise_range: float = 100
+    floor_noise_range: float = 100
+    height_scale: float = 1
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        json_to_dataclass_map = {
+            "Location": "location",
+            "HRange": "hrange",
+            "VRange": "vrange",
+            "CeilingHeight": "ceiling_height",
+            "FloorDepth": "floor_depth",
+            "FloorAngle": "floor_angle",
+            "CeilingNoiseRange": "ceiling_noise_range",
+            "WallNoiseRange": "wall_noise_range",
+            "FloorNoiseRange": "floor_noise_range"
+        }
+        adjusted_dict = {json_to_dataclass_map[k]:v for k, v in data.items()}
+        adjusted_dict["location"] = (data["Location"]["X"], data["Location"]["Y"], data["Location"]["Z"])
+        return cls(**adjusted_dict)
+
+@dataclass 
+class Entrance:
+    location: tuple 
+    entrance_type: str
+    rotator: tuple
+
+    @classmethod 
+    def from_dict(cls, data: dict):
+        json_to_dataclass_map = {
+            "Location": "location",
+            "Type": "entrance_type",
+            "Direction": "rotator"
+        }
+        adjusted_dict = {json_to_dataclass_map[k]:v for k, v in data.items()}
+        adjusted_dict["location"] = (data["Location"]["X"], data["Location"]["Y"], data["Location"]["Z"])
+        adjusted_dict["rotator"] = (data["Direction"]["Roll"], data["Direction"]["Pitch"], data["Direction"]["Yaw"])
+        return cls(**adjusted_dict)
 
 
 def generate_floodfill(df, dr, fflines, num, outer_index):
     points = []
     new_ffill = copy.deepcopy(df)
     for point in fflines:
-        x, y, z = [i if i != 0 else 0.01 for i in point.center]
-        radius, height = float(point.radius), float(point.height)
         new_point = copy.deepcopy(dr)
-        new_point["Value"][0]["Value"][0]["Value"]["X"] = x
-        new_point["Value"][0]["Value"][0]["Value"]["Y"] = y
-        new_point["Value"][0]["Value"][0]["Value"]["Z"] = z
-        new_point["Value"][1]["Value"] = radius
-        new_point["Value"][2]["Value"] = height
+        new_point["Value"][0]["Value"][0]["Value"]["X"] = point.location[0]
+        new_point["Value"][0]["Value"][0]["Value"]["Y"] = point.location[1]
+        new_point["Value"][0]["Value"][0]["Value"]["Z"] = point.location[2]
+        new_point["Value"][1]["Value"] = point.hrange
+        new_point["Value"][2]["Value"] = point.vrange
+        new_point["Value"][3]["Value"] = point.ceiling_noise_range
+        new_point["Value"][4]["Value"] = point.wall_noise_range
+        new_point["Value"][5]["Value"] = point.floor_noise_range
+        new_point["Value"][6]["Value"] = point.ceiling_height
+        new_point["Value"][7]["Value"] = point.height_scale
+        new_point["Value"][8]["Value"] = point.floor_depth
+        new_point["Value"][9]["Value"] = point.floor_angle
         points.append(new_point)
     new_ffill["Data"][0]["Value"] = points
     new_ffill["ObjectName"] = f"FloodFillLine_{num}"
@@ -29,22 +79,20 @@ def generate_floodfill(df, dr, fflines, num, outer_index):
 
 
 def generate_entrance(de, entrance, num, outer_index):
-    x, y, z = [i if i != 0 else 0.01 for i in entrance.location]
-    roll, pitch, yaw = [i if i != 0 else 0.01 for i in entrance.orientation]
     new_entrance = copy.deepcopy(de)
-    new_entrance["Data"][0]["Value"][0]["Value"]["X"] = x
-    new_entrance["Data"][0]["Value"][0]["Value"]["Y"] = y
-    new_entrance["Data"][0]["Value"][0]["Value"]["Z"] = z
-    new_entrance["Data"][1]["Value"][0]["Value"]["Pitch"] = pitch
-    new_entrance["Data"][1]["Value"][0]["Value"]["Yaw"] = yaw
-    new_entrance["Data"][1]["Value"][0]["Value"]["Roll"] = roll
+    new_entrance["Data"][0]["Value"][0]["Value"]["X"] = entrance.location[0]
+    new_entrance["Data"][0]["Value"][0]["Value"]["Y"] = entrance.location[1]
+    new_entrance["Data"][0]["Value"][0]["Value"]["Z"] = entrance.location[2]
+    new_entrance["Data"][1]["Value"][0]["Value"]["Pitch"] = entrance.rotator[1]
+    new_entrance["Data"][1]["Value"][0]["Value"]["Yaw"] = entrance.rotator[2]
+    new_entrance["Data"][1]["Value"][0]["Value"]["Roll"] = entrance.rotator[0]
     match entrance.entrance_type:
         case "Exit":
             entrance_type = "ECaveEntranceType::Exit"
         case "Entrance":
             entrance_type = "ECaveEntranceType::Entrance"
         case "Secondary":
-            entrance_type = "ECaveEntranceType::Secondary"
+            entrance_type = "ECaveEntrancePriority::Secondary"
         case _:
             print(
                 f"Unknown entrance type: {entrance.entrance_type}, defaulting to Exit"
@@ -56,34 +104,14 @@ def generate_entrance(de, entrance, num, outer_index):
     new_entrance["CreateBeforeCreateDependencies"] = [outer_index]
     return new_entrance
 
-
-def build_hemisphere(hdata: dict):
-    return Hemisphere(
-        (hdata["Location"]["X"], hdata["Location"]["Y"], hdata["Location"]["Z"]),
-        hdata["HRange"],
-        hdata["VRange"],
-    )
-
-
-def build_entrance(edata: dict):
-    return Entrance(
-        (edata["Location"]["X"], edata["Location"]["Y"], edata["Location"]["Z"]),
-        edata["Type"],
-        (
-            edata["Direction"]["Roll"],
-            edata["Direction"]["Pitch"],
-            edata["Direction"]["Yaw"],
-        ),
-    )
-
-
-def parse_room_json(room_json: dict):
+def parse_room_json(room_json: dict) -> tuple:
     floodfilllines = []
     for ffill in room_json["FloodFillLines"]:
-        line = [build_hemisphere(l) for l in room_json["FloodFillLines"][ffill]["Points"]]
+        line = [FloodFillLine.from_dict(l) for l in room_json["FloodFillLines"][ffill]["Points"]]
         floodfilllines.append(line)
-    entrances = [build_entrance(v) for _, v in room_json["Entrances"].items()]
+    entrances = [Entrance.from_dict(v) for _, v in room_json["Entrances"].items()]
     return floodfilllines, entrances
+
 
 def generate_random_selector(drs: dict, drsr: dict, selector_refs: list, asset_list: list, outer_index: int) -> tuple[dict, list]:
     new_rs = copy.deepcopy(drs)
@@ -197,7 +225,6 @@ def build_json_and_uasset(room_json: dict):
     for entrance in entrance_list:
         default_asset["Exports"].append(entrance)
     for selector in selector_list:
-        print(selector)
         default_asset["Exports"].append(selector)
     default_asset["Exports"].append(room)
     for tag in TAGS:
