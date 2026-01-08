@@ -225,7 +225,10 @@ def parse_room_json(room_json: dict) -> tuple:
         line = [FloodFillLine.from_dict(l) for l in room_json["FloodFillLines"][ffill]["Points"]]
         floodfilllines.append(line)
     entrances = [Entrance.from_dict(v) for _, v in room_json["Entrances"].items()]
-    pillars = [FloodFillPillar.from_dict(v) for _, v in room_json["FloodFillPillars"].items()]
+    if room_json.get("FloodFillPillars"):
+        pillars = [FloodFillPillar.from_dict(v) for _, v in room_json["FloodFillPillars"].items()]
+    else:
+        pillars = None
     return floodfilllines, entrances, pillars
 
 
@@ -278,17 +281,17 @@ def build_json_and_uasset(room_json: dict):
     TAGS = room_json["Tags"]
     BOUNDS = room_json["Bounds"]
     PATH = f"/Game/Maps/Rooms/RoomGenerators/{ROOM_NAME}"
-    if room_json.get("RandomSelectors") is None:
-        random_sel_num = 0
-    else:
+    if "RandomSelectors" in room_json:
         random_sel_num = len(room_json["RandomSelectors"])
-    if room_json.get("FloodFillPillars") is None:
-        pillars_num  = 0
     else:
+        random_sel_num = 0
+    if "FloodFillPillars" in room_json:
+        asset_list = [k for k in room_json["FloodFillLines"]] + [k for k in room_json["Entrances"]] + [k for k in room_json["FloodFillPillars"]]
         pillars_num  = len(room_json["FloodFillPillars"])
+    else:
+        asset_list = [k for k in room_json["FloodFillLines"]] + [k for k in room_json["Entrances"]] 
+        pillars_num  = 0
     OUTER_ROOM_INDEX = len(room_json["FloodFillLines"]) + len(room_json["Entrances"]) + random_sel_num + pillars_num + 1
-
-    asset_list = [k for k in room_json["FloodFillLines"]] + [k for k in room_json["Entrances"]] + [k for k in room_json["FloodFillPillars"]]
 
     with open("assets/default_assets/default_floodfillline.json", "r") as f:
         default_floodfillline = json.load(f)
@@ -325,14 +328,18 @@ def build_json_and_uasset(room_json: dict):
         generate_entrance(default_entrance, e, ii, OUTER_ROOM_INDEX)
         for ii, e in enumerate(ENTRANCES)
     ]
-    pillar_list = [
-        generate_floodfillpillar(default_pillar, default_pillar_point, p, ii, OUTER_ROOM_INDEX)
-        for ii, p in enumerate(PILLARS)
-    ]
+    
+    if "FloodFillPillars" in room_json:
+        pillar_list = [
+            generate_floodfillpillar(default_pillar, default_pillar_point, p, ii, OUTER_ROOM_INDEX)
+            for ii, p in enumerate(PILLARS)
+        ]
+    else:
+        pillar_list = []
 
     selector_list = []
     selector_idx_list = []
-    if room_json.get("RandomSelectors"):
+    if "RandomSelectors" in room_json:
         for selector in room_json["RandomSelectors"]:
             new_sel_json, sel_idx = generate_random_selector(default_random_selector, default_random_selector_reference, room_json["RandomSelectors"][selector], asset_list, OUTER_ROOM_INDEX)
             selector_list.append(new_sel_json)
