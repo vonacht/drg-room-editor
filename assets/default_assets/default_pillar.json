@@ -1,0 +1,120 @@
+        {
+            "$type": "UAssetAPI.ExportTypes.NormalExport, UAssetAPI",
+            "Data": [
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Objects.ArrayPropertyData, UAssetAPI",
+                    "ArrayType": "StructProperty",
+                    "Name": "Points",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": []
+                },
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+                    "StructType": "RandRange",
+                    "SerializeNone": true,
+                    "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+                    "SerializationControl": "NoExtension",
+                    "Operation": "None",
+                    "Name": "RangeScale",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": [
+                        {
+                            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+                            "Value": 1.0,
+                            "Name": "Min",
+                            "ArrayIndex": 0,
+                            "IsZero": false,
+                            "PropertyTagFlags": "None",
+                            "PropertyTypeName": null,
+                            "PropertyTagExtensions": "NoExtension"
+                        },
+                        {
+                            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+                            "Value": 1.0,
+                            "Name": "Max",
+                            "ArrayIndex": 0,
+                            "IsZero": false,
+                            "PropertyTagFlags": "None",
+                            "PropertyTypeName": null,
+                            "PropertyTagExtensions": "NoExtension"
+                        }
+                    ]
+                },
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+                    "StructType": "RandRange",
+                    "SerializeNone": true,
+                    "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+                    "SerializationControl": "NoExtension",
+                    "Operation": "None",
+                    "Name": "NoiseRangeScale",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": [
+                        {
+                            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+                            "Value": 1.0,
+                            "Name": "Min",
+                            "ArrayIndex": 0,
+                            "IsZero": false,
+                            "PropertyTagFlags": "None",
+                            "PropertyTypeName": null,
+                            "PropertyTagExtensions": "NoExtension"
+                        },
+                        {
+                            "$type": "UAssetAPI.PropertyTypes.Objects.FloatPropertyData, UAssetAPI",
+                            "Value": 1.0,
+                            "Name": "Max",
+                            "ArrayIndex": 0,
+                            "IsZero": false,
+                            "PropertyTagFlags": "None",
+                            "PropertyTypeName": null,
+                            "PropertyTagExtensions": "NoExtension"
+                        }
+                    ]
+                }
+            ],
+            "ObjectGuid": null,
+            "SerializationControl": "NoExtension",
+            "Operation": "None",
+            "ObjectName": "FloodFillPillar_1",
+            "OuterIndex": 42,
+            "ClassIndex": -3,
+            "SuperIndex": 0,
+            "TemplateIndex": -8,
+            "ObjectFlags": "RF_NoFlags",
+            "SerialSize": 1386,
+            "SerialOffset": 19614,
+            "ScriptSerializationStartOffset": 0,
+            "ScriptSerializationEndOffset": 0,
+            "bForcedExport": false,
+            "bNotForClient": false,
+            "bNotForServer": false,
+            "PackageGuid": "{00000000-0000-0000-0000-000000000000}",
+            "IsInheritedInstance": false,
+            "PackageFlags": "PKG_None",
+            "bNotAlwaysLoadedForEditorGame": true,
+            "bIsAsset": false,
+            "GeneratePublicHash": false,
+            "SerializationBeforeSerializationDependencies": [],
+            "CreateBeforeSerializationDependencies": [],
+            "SerializationBeforeCreateDependencies": [
+                -3,
+                -8
+            ],
+            "CreateBeforeCreateDependencies": [
+                42
+            ],
+            "Extras": ""
+        }
