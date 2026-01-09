@@ -87,8 +87,8 @@ def set_axes_equal(ax):
 def room_plotter_3d(ax, canvas, plot_ctx: dict):
     """This method receives the axes and canvas from the main GUI in main.py and
     a context object with:
-        + The JSON dict defining the room.
-        + Boolean switches telling which features we need to plot.
+        + The JSON dict defining the room,
+        + Boolean switches telling which features we need to plot,
     and it plots the room.
     """
     room_json = plot_ctx["room"]
@@ -148,7 +148,13 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
                 linewidth=2,
             )
 
-    # 3. Some plotting directives:
+    # 3. We plot the FloodFillPillars:
+    if plot_ctx["show_pillars"] and "FloodFillPillars" in room_json:
+        for _, pillar in room_json["FloodFillPillars"].items():
+            points = [(p["Location"]["X"], p["Location"]["Y"], p["Location"]["Z"]) for p in pillar["Points"]]
+            xs, ys, zs = zip(*points)
+            ax.plot(xs, ys, zs)
+    # 4. Some plotting directives:
     set_axes_equal(ax)
     ax.xaxis.pane.set_visible(False)
     ax.yaxis.pane.set_visible(False)

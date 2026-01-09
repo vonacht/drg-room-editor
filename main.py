@@ -64,6 +64,15 @@ class App(tk.Tk):
             variable=self.var_ffill,
             command=self.try_update_from_json,
         ).grid(row=0, column=4, padx=10)
+
+        self.var_pillars = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            controls,
+            text="Show FloodFillPillars",
+            variable=self.var_pillars,
+            command=self.try_update_from_json,
+        ).grid(row=0, column=5, padx=10)
+
         # ---- Vertical split: editor / status ----
         left_pane = ttk.Panedwindow(left_column, orient=tk.VERTICAL)
         left_pane.grid(row=1, column=0, sticky="nsew")
@@ -147,6 +156,7 @@ class App(tk.Tk):
             "room": self.room_json,
             "show_ffill": self.var_ffill.get(),
             "show_entrances": self.var_entrances.get(),
+            "show_pillars": self.var_pillars.get(),
         }
         room_plotter_3d(self.ax, self.canvas, self.plot_context)
 
