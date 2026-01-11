@@ -1,0 +1,338 @@
+{
+  "Name": "RMA_Circles01",
+  "Bounds": 4500,
+  "Tags": [
+    "Rooms.Linear.CustomEggSmall",
+    "Rooms.Linear.CustomMiningSmall"
+  ],
+  "FloodFillLines": {
+    "Floodfill_1": {
+      "Points": [
+        {
+          "Location": {
+            "X": 850,
+            "Y": 0,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": 425.0000000000001,
+            "Y": 736.1215932167728,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": -424.99999999999983,
+            "Y": 736.1215932167729,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": -850,
+            "Y": 0,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": -425.0000000000004,
+            "Y": -736.1215932167726,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": 424.99999999999943,
+            "Y": -736.1215932167731,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        }
+      ]
+    },
+    "Floodfill_2": {
+      "Points": [
+        {
+          "Location": {
+            "X": 850,
+            "Y": 1400,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": 425.0000000000001,
+            "Y": 2136.121593216773,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": -424.99999999999983,
+            "Y": 2136.121593216773,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": -850,
+            "Y": 1400,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": -425.0000000000004,
+            "Y": 663.8784067832274,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        },
+        {
+          "Location": {
+            "X": 424.99999999999943,
+            "Y": 663.8784067832269,
+            "Z": 0
+          },
+          "HRange": 550,
+          "VRange": 550
+        }
+      ]
+    }
+  },
+  "FloodFillPillars": {
+    "Pillar_0": {
+      "Points": [
+        {
+          "Location": {
+            "X": -500,
+            "Y": 2000,
+            "Z": 0
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        },
+        {
+          "Location": {
+            "X": -500,
+            "Y": 2000,
+            "Z": 550
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        }
+      ]
+    },
+    "Pillar_1": {
+      "Points": [
+        {
+          "Location": {
+            "X": -600,
+            "Y": 0,
+            "Z": 0
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        },
+        {
+          "Location": {
+            "X": -600,
+            "Y": 0,
+            "Z": 550
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        }
+      ]
+    },
+    "Pillar_2": {
+      "Points": [
+        {
+          "Location": {
+            "X": 1000,
+            "Y": 1500,
+            "Z": 0
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        },
+        {
+          "Location": {
+            "X": 1000,
+            "Y": 1500,
+            "Z": 550
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        }
+      ]
+    },
+    "Pillar_3": {
+      "Points": [
+        {
+          "Location": {
+            "X": 1000,
+            "Y": 0,
+            "Z": 0
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        },
+        {
+          "Location": {
+            "X": 1000,
+            "Y": 0,
+            "Z": 550
+          },
+          "FillAmount": {
+            "Min": 200,
+            "Max": 200
+          }
+        }
+      ]
+    }
+  },
+  "Entrances": {
+    "Entrance_1": {
+      "Location": {
+        "X": -1400,
+        "Y": 0,
+        "Z": 0
+      },
+      "Type": "Entrance",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": 0,
+        "Roll": 0
+      }
+    },
+    "Entrance_2": {
+      "Location": {
+        "X": -1400,
+        "Y": 1500,
+        "Z": 0
+      },
+      "Type": "Entrance",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": 0,
+        "Roll": 0
+      }
+    },
+    "Entrance_3": {
+      "Location": {
+        "X": 1400,
+        "Y": 1500,
+        "Z": 0
+      },
+      "Type": "Entrance",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": 180,
+        "Roll": 0
+      }
+    },
+    "Entrance_4": {
+      "Location": {
+        "X": 1400,
+        "Y": 0,
+        "Z": 0
+      },
+      "Type": "Entrance",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": 180,
+        "Roll": 0
+      }
+    },
+    "Entrance_5": {
+      "Location": {
+        "X": 500,
+        "Y": -1200,
+        "Z": 0
+      },
+      "Type": "Exit",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": -90,
+        "Roll": 0
+      }
+    },
+    "Entrance_6": {
+      "Location": {
+        "X": -500,
+        "Y": -1200,
+        "Z": 0
+      },
+      "Type": "Exit",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": -90,
+        "Roll": 0
+      }
+    },
+    "Entrance_7": {
+      "Location": {
+        "X": -500,
+        "Y": 2600,
+        "Z": 0
+      },
+      "Type": "Exit",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": 90,
+        "Roll": 0
+      }
+    },
+    "Entrance_8": {
+      "Location": {
+        "X": 500,
+        "Y": 2600,
+        "Z": 0
+      },
+      "Type": "Exit",
+      "Direction": {
+        "Pitch": 0,
+        "Yaw": 90,
+        "Roll": 0
+      }
+    }
+  }
+}

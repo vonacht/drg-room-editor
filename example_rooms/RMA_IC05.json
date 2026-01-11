@@ -1,0 +1,345 @@
+{
+    "Name": "RMA_IC05",
+    "Bounds": 12000,
+    "Tags": [
+        "Rooms.Linear.CustomEgg",
+        "Rooms.Linear.CustomMining"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": 0
+                    },
+                    "HRange": 1200,
+                    "VRange": 1200,
+                    "CeilingHeight": 300
+                },
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": -10000
+                    },
+                    "HRange": 1200,
+                    "VRange": 1200,
+                    "CeilingHeight": 300
+                }
+            ]
+        },
+	"Floodfill_2": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 1500,
+                        "Y": 0,
+                        "Z": 0
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 2000,
+                        "Y": -1500,
+                        "Z": -1000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 800,
+                        "Y": -2800,
+                        "Z": -2000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": -4000,
+                        "Z": -2000
+                    },
+                    "HRange": 1200,
+                    "VRange": 1200,
+                    "CeilingHeight": 500
+                },
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": -6000,
+                        "Z": -2000
+                    },
+                    "HRange": 800,
+                    "VRange": 800,
+                    "CeilingHeight": 500,
+                    "FloorAngle": 35
+                },
+                {
+                    "Location": {
+                        "X": -1200,
+                        "Y": -4000,
+                        "Z": -2000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -2000,
+                        "Y": -2000,
+                        "Z": -3000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": -1000,
+                        "Z": -3000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                }
+            ]
+        },
+	"Floodfill_3": {
+            "Points": [
+		{
+                    "Location": {
+                        "X": 1000,
+                        "Y": 1000,
+                        "Z": -3000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 2000,
+                        "Y": -2000,
+                        "Z": -5000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 2000,
+                        "Y": -3000,
+                        "Z": -5000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 4000,
+                        "Y": -3000,
+                        "Z": -5000
+                    },
+                    "HRange": 1400,
+                    "VRange": 1400
+                },
+                {
+                    "Location": {
+                        "X": 4000,
+                        "Y": -1500,
+                        "Z": -5000
+                    },
+                    "HRange": 500,
+                    "VRange": 500,
+                    "FloorAngle": 35
+                },
+                {
+                    "Location": {
+                        "X": 4000,
+                        "Y": 1000,
+                        "Z": -6000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": 1000,
+                        "Y": 500,
+                        "Z": -6000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                }
+            ]
+        },
+	"Floodfill_4": {
+            "Points": [
+		{
+                    "Location": {
+                        "X": -1000,
+                        "Y": -500,
+                        "Z": -6000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -3000,
+                        "Y": -500,
+                        "Z": -7000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -3000,
+                        "Y": 800,
+                        "Z": -7000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -3000,
+                        "Y": 2500,
+                        "Z": -7000
+                    },
+                    "HRange": 1500,
+                    "VRange": 1500,
+                    "CeilingHeight": 500,
+                    "FloorAngle": 10
+                },
+                {
+                    "Location": {
+                        "X": -5000,
+                        "Y": 2500,
+                        "Z": -7000
+                    },
+                    "HRange": 600,
+                    "VRange": 600
+                }
+            ]
+        },
+	"Floodfill_5": {
+            "Points": [
+		{
+                    "Location": {
+                        "X": -1400,
+                        "Y": 3000,
+                        "Z": -7000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+		{
+                    "Location": {
+                        "X": 1400,
+                        "Y": 3000,
+                        "Z": -8000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+		{
+                    "Location": {
+                        "X": 500,
+                        "Y": 1000,
+                        "Z": -10000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                }
+            ]
+        }
+    },
+    "FloodFillPillars": {
+        "Pillar_0": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 800,
+                        "Y": 900,
+                        "Z": -3100
+                    },
+                    "FillAmount": {
+                        "Min": 200,
+                        "Max": 200
+                    }
+                },
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": -800,
+                        "Z": -3100
+                    },
+                    "FillAmount": {
+                        "Min": 200,
+                        "Max": 200
+                    }
+                }
+            ]
+        },
+        "Pillar_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 800,
+                        "Y": 500,
+                        "Z": -6200
+                    },
+                    "FillAmount": {
+                        "Min": 200,
+                        "Max": 200
+                    }
+                },
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": -800,
+                        "Z": -6200
+                    },
+                    "FillAmount": {
+                        "Min": 200,
+                        "Max": 200
+                    }
+                }
+            ]
+        }
+    },
+    "Entrances": {
+        "Entrance_1": {
+            "Location": {
+                "X": -1100,
+                "Y": 0,
+                "Z": 0
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 0,
+                "Roll": 0
+            }
+        },
+       "Entrance_2": {
+            "Location": {
+                "X": -1100,
+                "Y": 0,
+                "Z": -10000
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 180,
+                "Roll": 0
+            }
+        }
+    }
+}

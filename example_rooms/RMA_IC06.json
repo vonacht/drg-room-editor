@@ -1,0 +1,122 @@
+{
+    "Name": "RMA_IC06",
+    "Bounds": 4500,
+    "Tags": [
+        "Rooms.Linear.CustomEggSmall",
+        "Rooms.Linear.CustomMiningSmall"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": 0
+                    },
+                    "HRange": 600,
+                    "VRange": 600
+                },
+                {
+                    "Location": {
+                        "X": 3000,
+                        "Y": 0,
+                        "Z": -2000
+                    },
+                    "HRange": 600,
+                    "VRange": 600
+                },
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": -4000
+                    },
+                    "HRange": 600,
+                    "VRange": 600
+                },
+                {
+                    "Location": {
+                        "X": -700,
+                        "Y": 0,
+                        "Z": -4000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -2000,
+                        "Y": -3000,
+                        "Z": -4000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                }
+            ]
+        },
+        "Floodfill_2": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": -700,
+                        "Y": 0,
+                        "Z": -4000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                },
+                {
+                    "Location": {
+                        "X": -2000,
+                        "Y": 3000,
+                        "Z": -4000
+                    },
+                    "HRange": 300,
+                    "VRange": 300
+                }
+            ]
+        }
+    },
+    "Entrances": {
+        "Entrance_1": {
+            "Location": {
+                "X": -500,
+                "Y": 0,
+                "Z": 0
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 0,
+                "Roll": 0
+            }
+        },
+        "Entrance_2": {
+            "Location": {
+                "X": -2200,
+                "Y": -3000,
+                "Z": -4000
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 180,
+                "Roll": 0
+            }
+        },
+        "Entrance_3": {
+            "Location": {
+                "X": -2200,
+                "Y": 3000,
+                "Z": -4000
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 180,
+                "Roll": 0
+            }
+        }
+    }
+}

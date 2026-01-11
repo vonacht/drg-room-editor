@@ -1,0 +1,136 @@
+{
+    "Name": "RMA_BigPit02",
+    "Bounds": 4500,
+    "Tags": [
+        "Rooms.Linear.CustomEggBig",
+        "Rooms.Linear.CustomMiningBig"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": 0
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 10000,
+                        "Y": 0,
+                        "Z": -10000
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                }
+            ]
+        },
+	"Floodfill_2": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": -800,
+                        "Z": 0
+                    },
+                    "HRange": 400,
+                    "VRange": 400
+                },
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": 800,
+                        "Z": 0
+                    },
+                    "HRange": 400,
+                    "VRange": 400
+                },
+                {
+                    "Location": {
+                        "X": 1000,
+                        "Y": 800,
+                        "Z": 0
+                    },
+                    "HRange": 400,
+                    "VRange": 400
+                },
+                {
+                    "Location": {
+                        "X": 1000,
+                        "Y": -800,
+                        "Z": 0
+                    },
+                    "HRange": 400,
+                    "VRange": 400
+                },
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": -800,
+                        "Z": 0
+                    },
+                    "HRange": 400,
+                    "VRange": 400
+                }
+            ]
+        },
+	"Floodfill_3": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 6000,
+                        "Y": 1200,
+                        "Z": -6000
+                    },
+                    "HRange": 800,
+                    "VRange": 800,
+                    "CeilinghHeight": 200
+                }
+            ]
+        }
+    },
+    "Entrances": {
+        "Entrance_0": {
+            "Location": {
+                "X": -1300,
+                "Y": -800,
+                "Z": 0
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 0
+            }
+        },
+ 	"Entrance_1": {
+            "Location": {
+                "X": 1300,
+                "Y": 800,
+                "Z": 0
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 180
+            }
+        },
+        "Entrance_2": {
+            "Location": {
+                "X": 10600,
+                "Y": 0,
+                "Z": -10000
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 0
+            }
+        }
+    }
+}
