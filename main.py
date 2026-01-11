@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import HORIZONTAL, ttk
 import json
 from room_parser import validate_room
 
@@ -21,33 +21,25 @@ class App(tk.Tk):
 
         self.update_job = None
 
-        # ================= MAIN LEFT / RIGHT SPLIT =================
-        main = ttk.Frame(self)
-        main.pack(fill=tk.BOTH, expand=True)
+        # ================= Main geometry with a Windowed Pane =================
+        paned = ttk.PanedWindow(self, orient=HORIZONTAL)
+        paned.pack(fill=tk.BOTH, expand=True)
+        left = ttk.Frame(paned, width=100, height=100, relief="sunken")
+        middle = ttk.Frame(paned, width=100, height=100, relief="sunken")
+        right = ttk.Frame(paned, width=200, height=100, relief="sunken")
 
-        main.columnconfigure(0, weight=1)
-        main.columnconfigure(1, weight=1)
-        main.rowconfigure(0, weight=1)
-
-        # ================= LEFT COLUMN =================
-        left_column = ttk.Frame(main)
-        left_column.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-
-        left_column.rowconfigure(1, weight=1)  # editor expands
-        left_column.rowconfigure(2, weight=0)  # status fixed-ish
-
+        paned.add(left, weight=1)
+        paned.add(middle, weight=3)
+        paned.add(right, weight=3)
+        # =================  Left Pane: Controls, editor and status box =================
         # ---- Top-left control panel ----
-        controls = ttk.Frame(left_column, padding=(5, 5))
-        controls.grid(row=0, column=0, sticky="ew")
-
-        ttk.Button(controls, text="Reset Plot View", command=self.reset_ax_view).grid(
-            row=0, column=0, padx=10
-        )
-
+        controls = ttk.Frame(left, padding=(5, 5))
+        controls.pack()
+        ttk.Button(controls, text="Reset Plot View", command=self.reset_ax_view).pack(side="left", padx=10)
         self.save_button = ttk.Button(
             controls, text="Save UAsset", command=self.try_saving_uasset
         )
-        self.save_button.grid(row=0, column=1, padx=10)
+        self.save_button.pack(side="left", padx=10)
 
         self.var_entrances = tk.BooleanVar(value=True)
         ttk.Checkbutton(
@@ -55,7 +47,7 @@ class App(tk.Tk):
             text="Show Entrances",
             variable=self.var_entrances,
             command=self.try_update_from_json,
-        ).grid(row=0, column=3, padx=10)
+        ).pack(side="left", padx=10)
 
         self.var_ffill = tk.BooleanVar(value=True)
         ttk.Checkbutton(
@@ -63,7 +55,7 @@ class App(tk.Tk):
             text="Show FloodFillLines",
             variable=self.var_ffill,
             command=self.try_update_from_json,
-        ).grid(row=0, column=4, padx=10)
+        ).pack(side="left", padx=10)
 
         self.var_pillars = tk.BooleanVar(value=True)
         ttk.Checkbutton(
@@ -71,23 +63,23 @@ class App(tk.Tk):
             text="Show FloodFillPillars",
             variable=self.var_pillars,
             command=self.try_update_from_json,
-        ).grid(row=0, column=5, padx=10)
+        ).pack(side="left", padx=10)
+
+        nested_left_pane = ttk.PanedWindow(left, orient=tk.VERTICAL)
+        nested_left_pane.pack(fill="both", expand=True)
+        editor_frame = ttk.Frame(nested_left_pane, height=400, relief="ridge")
+        status_frame = ttk.Frame(nested_left_pane, height=200, relief="ridge")
+        nested_left_pane.add(editor_frame, weight=1)
+        nested_left_pane.add(status_frame, weight=1)
 
         # ---- Vertical split: editor / status ----
-        left_pane = ttk.Panedwindow(left_column, orient=tk.VERTICAL)
-        left_pane.grid(row=1, column=0, sticky="nsew")
-
         # JSON editor
-        editor_frame = ttk.Frame(left_pane)
         self.editor = tk.Text(editor_frame, wrap=tk.NONE, undo=True)
-        self.editor.pack(fill=tk.BOTH, expand=True)
-
         self.editor.insert(tk.END, text)
+        self.editor.pack(fill="both", expand=True)
 
-        left_pane.add(editor_frame, weight=4)
 
-        # Status box
-        status_frame = ttk.Frame(left_pane, height=80)
+#        # Status box
         self.status = tk.Text(
             status_frame,
             height=4,
@@ -95,22 +87,19 @@ class App(tk.Tk):
             state=tk.DISABLED,
             background="#f4f4f4",
         )
-        self.status.pack(fill=tk.BOTH, expand=True)
-
-        left_pane.add(status_frame, weight=1)
+        self.status.pack(fill="both", expand=True)
 
         # ================= RIGHT COLUMN (PLOT) =================
         fig = Figure(dpi=100)
         self.ax = fig.add_subplot(111, projection="3d")
-        self.canvas = FigureCanvasTkAgg(fig, master=main)
-        self.canvas.get_tk_widget().grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-
-        # ---- Bindings ----
+        self.canvas = FigureCanvasTkAgg(fig, master=right)
+        self.canvas.get_tk_widget().pack(fill="both", expand=True)
+#
+#        # ---- Bindings ----
         self.editor.bind("<<Modified>>", self.on_text_change)
         self.editor.bind("<Control-v>", self.paste_replace)
         self.editor.edit_modified(False)
 
-        # TODO: add default plot state here if needed
         self.set_status("Ready")
         if text != "{}":
             self.try_update_from_json()
