@@ -79,7 +79,7 @@ class App(tk.Tk):
 
         # JSON editor
         editor_frame = ttk.Frame(left_pane)
-        self.editor = tk.Text(editor_frame, wrap=tk.NONE)
+        self.editor = tk.Text(editor_frame, wrap=tk.NONE, undo=True)
         self.editor.pack(fill=tk.BOTH, expand=True)
 
         self.editor.insert(tk.END, text)
@@ -107,6 +107,7 @@ class App(tk.Tk):
 
         # ---- Bindings ----
         self.editor.bind("<<Modified>>", self.on_text_change)
+        self.editor.bind("<Control-v>", self.paste_replace)
         self.editor.edit_modified(False)
 
         # TODO: add default plot state here if needed
@@ -115,6 +116,17 @@ class App(tk.Tk):
             self.try_update_from_json()
 
     # ---------- Text handling ----------
+    def paste_replace(self, event):
+        widget = event.widget
+        widget.edit_separator()  # start undo block
+        try:
+            widget.delete("sel.first", "sel.last")
+        except tk.TclError:
+            pass
+        widget.insert("insert", widget.clipboard_get())
+        widget.edit_separator()  # end undo block
+        return "break"
+
     def on_text_change(self, event):
         if not self.editor.edit_modified():
             return
