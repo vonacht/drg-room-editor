@@ -154,7 +154,7 @@ class App(tk.Tk):
 
         self.room_json = data
         #self.refresh_middle_rows()
-        #self.set_valid_state()
+        self.set_valid_state()
         #print(self.feature_record)
         # TODO: Add default plot state here
         self.plot_context = {
@@ -165,26 +165,26 @@ class App(tk.Tk):
         }
         room_plotter_3d(self.ax, self.canvas, self.plot_context)
 
-    def refresh_middle_rows(self):
-        for feature in ["FloodFillLines", "Entrances", "FloodFillPillars"]:
-            if feature in self.room_json:
-                self.add_row_middle(feature)
-                for ffill in self.room_json[feature]:
-                    self.add_row_middle(ffill, top=False)
+#    def refresh_middle_rows(self):
+#        for feature in ["FloodFillLines", "Entrances", "FloodFillPillars"]:
+#            if feature in self.room_json:
+#                self.add_row_middle(feature)
+#                for ffill in self.room_json[feature]:
+#                    self.add_row_middle(ffill, top=False)
     
-    def add_row_middle(self, name, top=True):
-        row = ttk.Frame(self.middle)
-        row.pack(fill="x", pady=2, padx=5)
-
-        var_check = tk.BooleanVar()
-        var_color = tk.StringVar(value="Red")
-
-        if not top:
-            ttk.Checkbutton(row, variable=var_check).pack(side="left")
-        ttk.Label(row, text=name, width=20).pack(side="left", padx=5)
-        if not top:
-            ttk.Combobox(row, textvariable=var_color, values=["Red","Green","Blue"], width=10, state="readonly").pack(side="left")
-            self.feature_record.update({name: {"visible": var_check.get(), "color": var_color}})
+#    def add_row_middle(self, name, top=True):
+#        row = ttk.Frame(self.middle)
+#        row.pack(fill="x", pady=2, padx=5)
+#
+#        var_check = tk.BooleanVar()
+#        var_color = tk.StringVar(value="Red")
+#
+#        if not top:
+#            ttk.Checkbutton(row, variable=var_check).pack(side="left")
+#        ttk.Label(row, text=name, width=20).pack(side="left", padx=5)
+#        if not top:
+#            ttk.Combobox(row, textvariable=var_color, values=["Red","Green","Blue"], width=10, state="readonly").pack(side="left")
+#            self.feature_record.update({name: {"visible": var_check.get(), "color": var_color}})
 
 
     # ---------- Status + feedback ----------
