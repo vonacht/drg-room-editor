@@ -20,16 +20,18 @@ class App(tk.Tk):
         self.geometry("950x600")
 
         self.update_job = None
+        # The following dict keeps track of the values in the central comboboxes and checkboxes:
+        self.feature_record = {}
 
         # ================= Main geometry with a Windowed Pane =================
         paned = ttk.PanedWindow(self, orient=HORIZONTAL)
         paned.pack(fill=tk.BOTH, expand=True)
         left = ttk.Frame(paned, width=100, height=100, relief="sunken")
-        middle = ttk.Frame(paned, width=100, height=100, relief="sunken")
+        #self.middle = ttk.Frame(paned, width=100, height=100, relief="sunken")
         right = ttk.Frame(paned, width=200, height=100, relief="sunken")
 
         paned.add(left, weight=1)
-        paned.add(middle, weight=3)
+        #paned.add(self.middle, weight=3)
         paned.add(right, weight=3)
         # =================  Left Pane: Controls, editor and status box =================
         # ---- Top-left control panel ----
@@ -149,9 +151,11 @@ class App(tk.Tk):
             self.set_invalid_state(f"JSON room schema error: {e.message}")
             return
 
-        self.room_json = data
 
-        self.set_valid_state()
+        self.room_json = data
+        #self.refresh_middle_rows()
+        #self.set_valid_state()
+        #print(self.feature_record)
         # TODO: Add default plot state here
         self.plot_context = {
             "room": self.room_json,
@@ -160,6 +164,28 @@ class App(tk.Tk):
             "show_pillars": self.var_pillars.get(),
         }
         room_plotter_3d(self.ax, self.canvas, self.plot_context)
+
+    def refresh_middle_rows(self):
+        for feature in ["FloodFillLines", "Entrances", "FloodFillPillars"]:
+            if feature in self.room_json:
+                self.add_row_middle(feature)
+                for ffill in self.room_json[feature]:
+                    self.add_row_middle(ffill, top=False)
+    
+    def add_row_middle(self, name, top=True):
+        row = ttk.Frame(self.middle)
+        row.pack(fill="x", pady=2, padx=5)
+
+        var_check = tk.BooleanVar()
+        var_color = tk.StringVar(value="Red")
+
+        if not top:
+            ttk.Checkbutton(row, variable=var_check).pack(side="left")
+        ttk.Label(row, text=name, width=20).pack(side="left", padx=5)
+        if not top:
+            ttk.Combobox(row, textvariable=var_color, values=["Red","Green","Blue"], width=10, state="readonly").pack(side="left")
+            self.feature_record.update({name: {"visible": var_check.get(), "color": var_color}})
+
 
     # ---------- Status + feedback ----------
     def set_status(self, message):
