@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 import copy
 import json
+import logging
 
 from uassetgen import JSON_to_uasset
 
@@ -179,7 +180,7 @@ def generate_entrance(de, entrance, num, outer_index):
         case "Secondary":
             entrance_type = "ECaveEntrancePriority::Secondary"
         case _:
-            print(
+            logging.warning(
                 f"Unknown entrance type: {entrance.entrance_type}, defaulting to Exit"
             )
             entrance_type = "ECaveEntranceType::Exit"
@@ -240,7 +241,7 @@ def generate_random_selector(drs: dict, drsr: dict, selector_refs: list, asset_l
         try:
             index_ref = asset_list.index(selector) + 1
         except ValueError:
-            print(f"RandomSelector reference {selector} not found in list: {asset_list}. Skipping.")
+            logging.warning(f"RandomSelector reference {selector} not found in list: {asset_list}. Skipping.")
             continue
         new_reference = copy.deepcopy(drsr)
         new_reference["Value"] = index_ref
@@ -267,7 +268,6 @@ def generate_room(dr, drr, tags, bounds, outer_index, name, selector_idx_list):
             new_reference["Value"] = ii + 1
             references.append(new_reference)
     new_room["Data"][0]["Value"] = references
-    print(selector_idx_list)
     new_room["CreateBeforeSerializationDependencies"] = [
         x for x in range(1, outer_index) if x not in selector_idx_list
     ] + [-13]
@@ -370,8 +370,8 @@ def build_json_and_uasset(room_json: dict):
     default_asset["NameMap"][0] = PATH
     default_asset["NameMap"][50] = ROOM_NAME
 
-    with open(f"assets/{ROOM_NAME}.json", "w") as f:
-        json.dump(default_asset, f, indent=4)
+    #with open(f"assets/{ROOM_NAME}.json", "w") as f:
+    #    json.dump(default_asset, f, indent=4)
 
     # We generate the asset:
-    JSON_to_uasset(f"assets/{ROOM_NAME}.json", ROOM_NAME)
+    JSON_to_uasset(default_asset, ROOM_NAME)
