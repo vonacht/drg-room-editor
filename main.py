@@ -9,8 +9,17 @@ from matplotlib.figure import Figure
 from jsonschema import ValidationError
 from room_viewer import room_plotter_3d
 from json_builder import build_json_and_uasset
-import argparse
 
+import argparse
+from pathlib import Path
+
+import logging
+
+def setup_logging(level=logging.INFO):
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
 
 class App(tk.Tk):
     def __init__(self, text="{}"):
@@ -217,20 +226,49 @@ class App(tk.Tk):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="DRG Custom Room Editor")
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "filename",
         nargs="?",            # makes it optional
         default=None,          # value if not provided
         help="Optional input filename"
     )
 
+    group.add_argument(
+        "-b",
+        "--batch",
+        nargs="+",            # makes it optional
+        default=[],          # value if not provided
+        help="Batch mode. Disables the GUI. Accepts one or more directory paths with room JSONs inside."
+    )
+
     args = parser.parse_args()
+    setup_logging()
 
     if args.filename is not None:
-        with open(args.filename, 'r') as f:
-            json_from_file = json.load(f)
-            app = App(text=json.dumps(json_from_file, indent=4))
-            app.mainloop()
+        try:
+            with open(args.filename, 'r') as f:
+                logging.info(f"Editor GUI started with file {args.filename}")
+                json_from_file = json.load(f)
+                app = App(text=json.dumps(json_from_file, indent=4))
+                app.mainloop()
+        except Exception as e:
+            logging.error(e)
+    elif args.batch:
+        logging.info(f"Running batch mode.")
+        # Batch mode logic:
+        for directory in args.batch:
+            json_files = Path(directory).glob("*.json")
+            for file in json_files:
+                with open(file, 'r') as room_file:
+                    try:
+                        room_json = json.load(room_file)
+                        # File name to save the uasset:
+                        build_json_and_uasset(room_json)
+                    except Exception as e:
+                        logging.error(f"Error when processing {file}: {e}")
+                        continue
     else:
         App().mainloop()
-
+        logging.info("Editor GUI started with a blank file.")
+    
