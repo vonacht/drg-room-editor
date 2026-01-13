@@ -3,21 +3,19 @@ from pythonnet import load
 
 load("coreclr")
 import clr
-import os
 import json
 from pathlib import Path
 
 
 def JSON_to_uasset(room_json: dict, room_name: str):
-    dll_path = os.environ.get("UASSETAPI_DLL_PATH")
-    if dll_path is None:
-        raise Exception("Please set env var UASSETAPI_DLL_PATH")
-    # Load the assembly:
-    clr.AddReference(f"{dll_path}/libs/UAssetAPI.dll")
+    # Load the assembly. The dll_path needs to be an absolute reference to libs/UAssetAPI.dll:
+    dll_path = Path.cwd() / "libs" / "UAssetAPI.dll"
+    clr.AddReference(str(dll_path))
     # We load the methods to read from JSON and save:
     from UAssetAPI import UAsset
     from UAssetAPI import UnrealTypes
 
     # DeserializeJson expects a string:
-    UAsset.DeserializeJson(json.dumps(room_json)).Write(f"assets/{room_name}.uasset")
+    save_path = Path("assets") / Path(f"{room_name}.uasset")
+    UAsset.DeserializeJson(json.dumps(room_json)).Write(str(save_path))
     logging.info(f"Written UAsset in assets/{room_name}.uasset")
