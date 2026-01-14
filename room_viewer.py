@@ -10,10 +10,24 @@ def rotate_vector(v, roll, pitch, yaw):
     r = R.from_euler("zyx", [yaw, pitch, roll], degrees=True)  # yaw, pitch, roll
     return r.apply(v)
 
+def return_ffill_parameters(S: dict):
+    # First we compute the height of the room, which is the minimum between
+    # CeilingHeight (if exists) or VRange (always exists, forced by the schema):
+    height = min(h for h in [S["VRange"], S.get("CeilingHeight")] if h is not None)
+    center = [S["Location"]["X"], S["Location"]["Y"], S["Location"]["Z"]]
+    # The Z coordinate can me moved up or down by the FloorDepth, if it exists.
+    # If it does, we also need to change the height of the room accordingly.
+    if "FloorDepth" in S:
+        floor_depth = S["Location"]["Z"] + S["FloorDepth"] 
+        if floor_depth <= height:
+            center[2] = floor_depth
+            height -= floor_depth
+    ra, rb = S["HRange"], S["HRange"]
+
+    return np.array(center), height, ra, rb
 
 def create_ellipsoid(S: dict) -> tuple:
-    center = S["Location"]["X"], S["Location"]["Y"], S["Location"]["Z"]
-    ra, rb, height = S["HRange"], S["HRange"], S["VRange"]
+    center, height, ra, rb = return_ffill_parameters(S)
     # Spherical coordinates:
     phi = np.linspace(0, np.pi / 2, 30)  # top half only
     theta = np.linspace(0, 2 * np.pi, 60)
@@ -30,10 +44,8 @@ def create_tangent_lines(S1: dict, S2: dict) -> list:
     FLoodFillLines. These are plotted in the main plot to show that the
     elements of the same Line are connected together.
     """
-    C1 = np.array((S1["Location"]["X"], S1["Location"]["Y"], S1["Location"]["Z"]))
-    C2 = np.array((S2["Location"]["X"], S2["Location"]["Y"], S2["Location"]["Z"]))
-    r1, r2 = S1["HRange"], S2["HRange"]
-    h1, h2 = S1["VRange"], S2["VRange"]
+    C1, h1, r1, _ = return_ffill_parameters(S1)
+    C2, h2, r2, _ = return_ffill_parameters(S2)
     tangents = []
     # Top tangent line connecting the peaks;
     x = [C1[0], C2[0]]
