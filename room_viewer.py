@@ -166,7 +166,24 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
             points = [(p["Location"]["X"], p["Location"]["Y"], p["Location"]["Z"]) for p in pillar["Points"]]
             xs, ys, zs = zip(*points)
             ax.plot(xs, ys, zs)
-    # 4. Some plotting directives:
+    # 4. In case of a PE room, we plot the MiningHead and DropPodDown features:
+    if plot_ctx["show_entrances"] and ("PE_MiningHead" in room_json or "PE_PodDropDown" in room_json):
+        for _, minehead in room_json.get("PE_MiningHead", {}).items():
+            x, y, z = (
+                    minehead["Location"]["X"],
+                    minehead["Location"]["Y"],
+                    minehead["Location"]["Z"]
+            )
+            ax.scatter(x, y, z, color="purple", s=15, marker='s')
+        for _, pod_location in room_json.get("PE_PodDropDown", {}).items():
+            x, y, z = (
+                    pod_location["Location"]["X"],
+                    pod_location["Location"]["Y"],
+                    pod_location["Location"]["Z"]
+            )
+            ax.scatter(x, y, z, color="black", s=15, marker='^')
+
+    # 5. Some plotting directives:
     set_axes_equal(ax)
     ax.xaxis.pane.set_visible(False)
     ax.yaxis.pane.set_visible(False)
