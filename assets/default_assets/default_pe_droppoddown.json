@@ -1,0 +1,80 @@
+{
+            "$type": "UAssetAPI.ExportTypes.NormalExport, UAssetAPI",
+            "Data": [
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI",
+                    "StructType": "Vector",
+                    "SerializeNone": true,
+                    "StructGUID": "{00000000-0000-0000-0000-000000000000}",
+                    "SerializationControl": "NoExtension",
+                    "Operation": "None",
+                    "Name": "Location",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": [
+                        {
+                            "$type": "UAssetAPI.PropertyTypes.Structs.VectorPropertyData, UAssetAPI",
+                            "Name": "Location",
+                            "ArrayIndex": 0,
+                            "IsZero": false,
+                            "PropertyTagFlags": "None",
+                            "PropertyTypeName": null,
+                            "PropertyTagExtensions": "NoExtension",
+                            "Value": {
+                                "$type": "UAssetAPI.UnrealTypes.FVector, UAssetAPI",
+                                "X": -1870.0,
+                                "Y": 4270.0009765625,
+                                "Z": 600.0
+                            }
+                        }
+                    ]
+                },
+                {
+                    "$type": "UAssetAPI.PropertyTypes.Objects.ObjectPropertyData, UAssetAPI",
+                    "Name": "CallDownClass",
+                    "ArrayIndex": 0,
+                    "IsZero": false,
+                    "PropertyTagFlags": "None",
+                    "PropertyTypeName": null,
+                    "PropertyTagExtensions": "NoExtension",
+                    "Value": -1
+                }
+            ],
+            "ObjectGuid": null,
+            "SerializationControl": "NoExtension",
+            "Operation": "None",
+            "ObjectName": "DropPodCalldownLocationFeature_11",
+            "OuterIndex": 42,
+            "ClassIndex": -6,
+            "SuperIndex": 0,
+            "TemplateIndex": -12,
+            "ObjectFlags": "RF_NoFlags",
+            "SerialSize": 102,
+            "SerialOffset": 7814,
+            "ScriptSerializationStartOffset": 0,
+            "ScriptSerializationEndOffset": 0,
+            "bForcedExport": false,
+            "bNotForClient": false,
+            "bNotForServer": false,
+            "PackageGuid": "{00000000-0000-0000-0000-000000000000}",
+            "IsInheritedInstance": false,
+            "PackageFlags": "PKG_None",
+            "bNotAlwaysLoadedForEditorGame": true,
+            "bIsAsset": false,
+            "GeneratePublicHash": false,
+            "SerializationBeforeSerializationDependencies": [],
+            "CreateBeforeSerializationDependencies": [
+                -1
+            ],
+            "SerializationBeforeCreateDependencies": [
+                -6,
+                -12
+            ],
+            "CreateBeforeCreateDependencies": [
+                42
+            ],
+            "Extras": ""
+        }
