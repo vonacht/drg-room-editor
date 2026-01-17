@@ -200,6 +200,7 @@ class App(tb.Window):
             "show_ffill": self.var_ffill.get(),
             "show_entrances": self.var_entrances.get(),
             "show_pillars": self.var_pillars.get(),
+            "light_mode": self.light_mode,
         }
         room_plotter_3d(self.ax, self.canvas, self.plot_context)
 
@@ -317,6 +318,6 @@ if __name__ == "__main__":
                         logging.error(f"Error when processing {file}: {e}")
                         continue
     else:
-        App().mainloop()
+        App(args.light).mainloop()
         logging.info("Editor GUI started with a blank file.")
     

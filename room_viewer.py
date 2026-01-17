@@ -131,7 +131,9 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
             )
             match entrance["Type"]:
                 case "Entrance":
-                    color = "blue"
+                    if plot_ctx["light_mode"]:
+                        color = "blue"
+                    else: color = "yellow"
                 case "Exit":
                     color = "red"
                 case "Secondary":
@@ -181,7 +183,11 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
                     pod_location["Location"]["Y"],
                     pod_location["Location"]["Z"]
             )
-            ax.scatter(x, y, z, color="black", s=15, marker='^')
+            if plot_ctx["light_mode"]:
+                ax.scatter(x, y, z, color="black", s=15, marker='^')
+            else:
+                ax.scatter(x, y, z, color="cyan", s=15, marker='^')
+
 
     # 5. Some plotting directives:
     set_axes_equal(ax)
