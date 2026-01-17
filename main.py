@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import HORIZONTAL, ttk
 import json
+import ttkbootstrap as tb
 from room_parser import validate_room
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 from jsonschema import ValidationError
 from room_viewer import room_plotter_3d
@@ -21,12 +23,17 @@ def setup_logging(level=logging.INFO):
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
-class App(tk.Tk):
-    def __init__(self, text="{}"):
+class App(tb.Window):
+    def __init__(self, light_mode, text="{}"):
         super().__init__()
 
         self.title("DRG Custom Room Editor")
         self.geometry("950x600")
+        self.light_mode = light_mode
+        if self.light_mode:
+            self.style.theme_use("flatly")
+        else:
+            self.style.theme_use("darkly")
 
         self.update_job = None
         # The following dict keeps track of the values in the central comboboxes and checkboxes:
@@ -89,7 +96,6 @@ class App(tk.Tk):
         self.editor.insert(tk.END, text)
         self.editor.pack(fill="both", expand=True)
 
-
 #        # Status box
         self.status = tk.Text(
             status_frame,
@@ -101,16 +107,39 @@ class App(tk.Tk):
         self.status.pack(fill="both", expand=True)
 
         # ================= RIGHT COLUMN (PLOT) =================
+        if not self.light_mode:
+            plt.style.use("dark_background")
         fig = Figure(dpi=100)
         self.ax = fig.add_subplot(111, projection="3d")
         self.canvas = FigureCanvasTkAgg(fig, master=right)
+        if not self.light_mode:       
+            fig.patch.set_facecolor("#000000")
+            self.ax.patch.set_alpha(0)
+            self.ax.patch.set_visible(False)
+            self.ax.patch.set_facecolor("none")
+            pane = (0.07, 0.07, 0.07, 1)
+            self.ax.xaxis.set_pane_color(pane)
+            self.ax.yaxis.set_pane_color(pane)
+            self.ax.zaxis.set_pane_color(pane)
+            self.ax.xaxis._axinfo["grid"]["color"] = "#444444"
+            self.ax.yaxis._axinfo["grid"]["color"] = "#444444"
+            self.ax.zaxis._axinfo["grid"]["color"] = "#444444"
+            self.ax.tick_params(colors="white")
+            self.ax.xaxis.label.set_color("white")
+            self.ax.yaxis.label.set_color("white")
+            self.ax.zaxis.label.set_color("white")
+            self.ax.title.set_color("white")
+            for axis in [self.ax.xaxis, self.ax.yaxis, self.ax.zaxis]:
+                axis.line.set_color("white")
+            self.canvas.get_tk_widget().configure(bg="#121212")
+
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 #
 #        # ---- Bindings ----
         self.editor.bind("<<Modified>>", self.on_text_change)
         self.editor.bind("<Control-v>", self.paste_replace)
         self.editor.edit_modified(False)
-
+    
         self.set_status("Ready")
         if text != "{}":
             self.try_update_from_json()
@@ -204,12 +233,22 @@ class App(tk.Tk):
         self.status.config(state=tk.DISABLED)
 
     def set_invalid_state(self, message):
-        self.editor.configure(background="#ffe6e6")
+        if self.light_mode:
+            self.editor.configure(background="#ffe6e6")
+        else:
+            self.editor.configure(background="#cf6679")
         self.disable_save_button()
         self.set_status(message)
 
     def set_valid_state(self):
-        self.editor.configure(background="white")
+        if self.light_mode:
+            self.editor.configure(background="white")
+        else:
+            self.editor.configure(bg="#1e1e1e",
+                                fg="#ffffff",
+                                insertbackground="#ffffff",  # cursor color
+                                selectbackground="#3a3a3a",
+                                selectforeground="#ffffff")
         self.enable_save_button()
         self.set_status("JSON valid")
 
@@ -221,6 +260,8 @@ class App(tk.Tk):
 
     def try_saving_uasset(self):
         build_json_and_uasset(self.room_json)
+
+
 
 
 if __name__ == "__main__":
@@ -242,6 +283,13 @@ if __name__ == "__main__":
         help="Batch mode. Disables the GUI. Accepts one or more directory paths with room JSONs inside."
     )
 
+    parser.add_argument(
+        "-l",
+        "--light",
+        action="store_true",
+        help="Starts the GUI in light mode."
+    )
+
     args = parser.parse_args()
     setup_logging()
 
@@ -250,7 +298,7 @@ if __name__ == "__main__":
             with open(args.filename, 'r') as f:
                 logging.info(f"Editor GUI started with file {args.filename}")
                 json_from_file = json.load(f)
-                app = App(text=json.dumps(json_from_file, indent=4))
+                app = App(args.light, text=json.dumps(json_from_file, indent=4))
                 app.mainloop()
         except Exception as e:
             logging.error(e)
