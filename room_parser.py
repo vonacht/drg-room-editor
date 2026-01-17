@@ -1,227 +1,317 @@
 from jsonschema import validate
 
 schema = {
-  "type": "object",
-  "properties": {
-    "Name": {
-      "type": "string"
-    },
-    "Bounds": {
-      "type": "number"
-    },
-    "Tags": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "FloodFillLines": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "Points": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "location": {
-                  "type": "object",
-                  "properties": {
-                    "x": {
-                      "type": "number"
-                    },
-                    "y": {
-                      "type": "number"
-                    },
-                    "z": {
-                      "type": "number"
-                    }
+   "type":"object",
+   "properties":{
+      "Name":{
+         "type":"string"
+      },
+      "Bounds":{
+         "type":"number"
+      },
+      "Tags":{
+         "type":"array",
+         "items":{
+            "type":"string"
+         }
+      },
+      "FloodFillLines":{
+         "type":"object",
+         "additionalProperties":{
+            "type":"object",
+            "properties":{
+               "Points":{
+                  "type":"array",
+                  "items":{
+                     "type":"object",
+                     "properties":{
+                        "location":{
+                           "type":"object",
+                           "properties":{
+                              "x":{
+                                 "type":"number"
+                              },
+                              "y":{
+                                 "type":"number"
+                              },
+                              "z":{
+                                 "type":"number"
+                              }
+                           },
+                           "required":[
+                              "x",
+                              "y",
+                              "z"
+                           ]
+                        },
+                        "hrange":{
+                           "type":"number"
+                        },
+                        "vrange":{
+                           "type":"number"
+                        }
+                     },
+                     "required":[
+                        "Location",
+                        "HRange",
+                        "VRange"
+                     ]
                   },
-                  "required": [
-                    "x",
-                    "y",
-                    "z"
+                  "contains": {"type": "object"},
+                  "minContains": 2
+               },
+               "RoomFeatures":{
+                  "type":"array",
+                  "item":"string"
+               }
+            },
+            "required":[
+               "Points"
+            ]
+         }
+      },
+      "Entrances":{
+         "type":"object",
+         "additionalProperties":{
+            "type":"object",
+            "properties":{
+               "Location":{
+                  "type":"object",
+                  "properties":{
+                     "X":{
+                        "type":"number"
+                     },
+                     "Y":{
+                        "type":"number"
+                     },
+                     "Z":{
+                        "type":"number"
+                     }
+                  },
+                  "required":[
+                     "X",
+                     "Y",
+                     "Z"
                   ]
-                },
-                "hrange": {
-                  "type": "number"
-                },
-                "vrange": {
-                  "type": "number"
-                }
-              },
-              "required": [
-                "Location",
-                "HRange",
-                "VRange"
-              ]
-            }
-          },
-          "RoomFeatures": {
-            "type": "array",
-            "item": "string"
-          }
-        },
-        "required": [
-          "Points"
-        ]
-      }
-    },
-    "Entrances": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "Location": {
-            "type": "object",
-            "properties": {
-              "X": {
-                "type": "number"
-              },
-              "Y": {
-                "type": "number"
-              },
-              "Z": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "X",
-              "Y",
-              "Z"
-            ]
-          },
-          "Type": {
-            "type": "string",
-            "enum": [
-              "Entrance",
-              "Secondary",
-              "Exit"
-            ]
-          },
-          "Direction": {
-            "type": "object",
-            "properties": {
-              "Roll": {
-                "type": "number"
-              },
-              "Yaw": {
-                "type": "number"
-              },
-              "Pitch": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "Pitch",
-              "Roll",
-              "Yaw"
-            ]
-          }
-        },
-        "required": [
-          "Location",
-          "Type",
-          "Direction"
-        ]
-      }
-    },
-    "RandomSelectors": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "item": "string"
-      }
-    },
-    "FloodFillPillars": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "Points": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "Location": {
-                  "type": "object",
-                  "properties": {
-                      "X": {"type": "number"},
-                      "Y": {"type": "number"},
-                      "Z": {"type": "number"}
-                  },
-                  "required": [
-                    "X",
-                    "Y",
-                    "Z"
+               },
+               "Type":{
+                  "type":"string",
+                  "enum":[
+                     "Entrance",
+                     "Secondary",
+                     "Exit"
                   ]
-                },
-                "Range": {
-                  "type": "object",
-                  "properties": {
-                      "Min": {"type": "number"},
-                      "Max": {"type": "number"}
+               },
+               "Direction":{
+                  "type":"object",
+                  "properties":{
+                     "Roll":{
+                        "type":"number"
+                     },
+                     "Yaw":{
+                        "type":"number"
+                     },
+                     "Pitch":{
+                        "type":"number"
+                     }
                   },
-                  "required": ["Min", "Max"]
-                },
-                "NoiseRange": {
-                  "type": "object",
-                  "properties": {
-                      "Min": {"type": "number"},
-                      "Max": {"type": "number"}
-                  },
-                  "required": ["Min", "Max"]
-                },
-                "SkewFactor": {
-                  "type": "object",
-                  "properties": {
-                      "Min": {"type": "number"},
-                      "Max": {"type": "number"}
-                  },
-                  "required": ["Min", "Max"]
-                },
-                "FillAmount": {
-                  "type": "object",
-                  "properties": {
-                      "Min": {"type": "number"},
-                      "Max": {"type": "number"}
-                  },
-                  "required": ["Min", "Max"]
-                }
-              }
+                  "required":[
+                     "Pitch",
+                     "Roll",
+                     "Yaw"
+                  ]
+               }
             },
-            "minContains": 2
-          },
-                "RangeScale": {
-                  "type": "object",
-                  "properties": {
-                      "Min": {"type": "number"},
-                      "Max": {"type": "number"}
+            "required":[
+               "Location",
+               "Type",
+               "Direction"
+            ]
+         }
+      },
+      "RandomSelectors":{
+         "type":"object",
+         "additionalProperties":{
+            "type":"array",
+            "item":"string"
+         }
+      },
+      "FloodFillPillars":{
+         "type":"object",
+         "additionalProperties":{
+            "type":"object",
+            "properties":{
+               "Points":{
+                  "type":"array",
+                  "items":{
+                     "type":"object",
+                     "properties":{
+                        "Location":{
+                           "type":"object",
+                           "properties":{
+                              "X":{
+                                 "type":"number"
+                              },
+                              "Y":{
+                                 "type":"number"
+                              },
+                              "Z":{
+                                 "type":"number"
+                              }
+                           },
+                           "required":[
+                              "X",
+                              "Y",
+                              "Z"
+                           ]
+                        },
+                        "Range":{
+                           "type":"object",
+                           "properties":{
+                              "Min":{
+                                 "type":"number"
+                              },
+                              "Max":{
+                                 "type":"number"
+                              }
+                           },
+                           "required":[
+                              "Min",
+                              "Max"
+                           ]
+                        },
+                        "NoiseRange":{
+                           "type":"object",
+                           "properties":{
+                              "Min":{
+                                 "type":"number"
+                              },
+                              "Max":{
+                                 "type":"number"
+                              }
+                           },
+                           "required":[
+                              "Min",
+                              "Max"
+                           ]
+                        },
+                        "SkewFactor":{
+                           "type":"object",
+                           "properties":{
+                              "Min":{
+                                 "type":"number"
+                              },
+                              "Max":{
+                                 "type":"number"
+                              }
+                           },
+                           "required":[
+                              "Min",
+                              "Max"
+                           ]
+                        },
+                        "FillAmount":{
+                           "type":"object",
+                           "properties":{
+                              "Min":{
+                                 "type":"number"
+                              },
+                              "Max":{
+                                 "type":"number"
+                              }
+                           },
+                           "required":[
+                              "Min",
+                              "Max"
+                           ]
+                        }
+                     }
                   },
-                  "required": ["Min", "Max"]
-                },
-                "NoiseRangeScale": {
-                  "type": "object",
-                  "properties": {
-                      "Min": {"type": "number"},
-                      "Max": {"type": "number"}
+                  "contains":{
+                     "type":"object"
                   },
-                  "required": ["Min", "Max"]
-                }
-          
-        },
-        "required": ["Points"]
+                  "minContains":2
+               },
+               "RangeScale":{
+                  "type":"object",
+                  "properties":{
+                     "Min":{
+                        "type":"number"
+                     },
+                     "Max":{
+                        "type":"number"
+                     }
+                  },
+                  "required":[
+                     "Min",
+                     "Max"
+                  ]
+               },
+               "NoiseRangeScale":{
+                  "type":"object",
+                  "properties":{
+                     "Min":{
+                        "type":"number"
+                     },
+                     "Max":{
+                        "type":"number"
+                     }
+                  },
+                  "required":[
+                     "Min",
+                     "Max"
+                  ]
+               }
+            },
+            "required":[
+               "Points"
+            ]
+         }
+      },
+      "PE_MiningHead":{
+         "type":"object",
+         "additionalProperties":{
+            "type":"object",
+            "properties":{
+               "Location":{
+                  "type":"object",
+                  "properties":{
+                     "X": {"type": "number"},
+                     "Y": {"type": "number"},
+                     "Z": {"type": "number"}
+                  },
+                  "required": ["X", "Y", "Z"]
+               }
+            },
+            "required": ["Location"]
+         }
+      },
+      "PE_PodDropDown":{
+         "type":"object",
+         "additionalProperties":{
+            "type":"object",
+            "properties":{
+               "Location":{
+                  "type":"object",
+                  "properties":{
+                     "X": {"type": "number"},
+                     "Y": {"type": "number"},
+                     "Z": {"type": "number"}
+                  },
+                  "required": ["X", "Y", "Z"]
+               }
+            },
+            "required": ["Location"]
+         }
       }
-    }
-  },
-  "required": [
-    "Name",
-    "Tags",
-    "Bounds",
-    "FloodFillLines",
-    "Entrances"
-  ]
+   },
+   "required":[
+      "Name",
+      "Tags",
+      "Bounds",
+      "FloodFillLines",
+      "Entrances"
+   ]
 }
 
 
