@@ -1,21 +1,25 @@
-import tkinter as tk
-from tkinter import HORIZONTAL, ttk
+import sys
 import json
-import ttkbootstrap as tb
-from room_parser import validate_room
+import argparse
+import logging
+from pathlib import Path
 
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QSplitter, QWidget, QVBoxLayout,
+    QHBoxLayout, QPushButton, QCheckBox, QPlainTextEdit
+)
+from PySide6.QtCore import Qt, QTimer, QRect, QSize, QRegularExpression
+from PySide6.QtGui import (
+    QSyntaxHighlighter, QTextCharFormat, QColor, QFont, QPainter
+)
+
+import pyqtgraph.opengl as gl
 
 from jsonschema import ValidationError
+from room_parser import validate_room
 from room_viewer import room_plotter_3d
 from json_builder import build_json_and_uasset
 
-import argparse
-from pathlib import Path
-
-import logging
 
 def setup_logging(level=logging.INFO):
     logging.basicConfig(
@@ -23,157 +27,283 @@ def setup_logging(level=logging.INFO):
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
-class App(tb.Window):
+
+class JsonHighlighter(QSyntaxHighlighter):
+    """Syntax highlighter for JSON."""
+
+    def __init__(self, parent=None, dark_mode=True):
+        super().__init__(parent)
+        self.highlighting_rules = []
+
+        if dark_mode:
+            # Dark mode colors
+            key_format = QTextCharFormat()
+            key_format.setForeground(QColor("#9cdcfe"))  # Light blue
+
+            string_format = QTextCharFormat()
+            string_format.setForeground(QColor("#ce9178"))  # Orange
+
+            number_format = QTextCharFormat()
+            number_format.setForeground(QColor("#b5cea8"))  # Light green
+
+            keyword_format = QTextCharFormat()
+            keyword_format.setForeground(QColor("#569cd6"))  # Blue
+
+            brace_format = QTextCharFormat()
+            brace_format.setForeground(QColor("#ffd700"))  # Gold
+        else:
+            # Light mode colors
+            key_format = QTextCharFormat()
+            key_format.setForeground(QColor("#0451a5"))
+
+            string_format = QTextCharFormat()
+            string_format.setForeground(QColor("#a31515"))
+
+            number_format = QTextCharFormat()
+            number_format.setForeground(QColor("#098658"))
+
+            keyword_format = QTextCharFormat()
+            keyword_format.setForeground(QColor("#0000ff"))
+
+            brace_format = QTextCharFormat()
+            brace_format.setForeground(QColor("#000000"))
+
+        # Rules: (pattern, format)
+        # Keys (before colon)
+        self.highlighting_rules.append(
+            (QRegularExpression(r'"[^"]*"\s*(?=:)'), key_format)
+        )
+        # Strings (values)
+        self.highlighting_rules.append(
+            (QRegularExpression(r':\s*"[^"]*"'), string_format)
+        )
+        # Numbers
+        self.highlighting_rules.append(
+            (QRegularExpression(r'\b-?\d+\.?\d*([eE][+-]?\d+)?\b'), number_format)
+        )
+        # Keywords: true, false, null
+        self.highlighting_rules.append(
+            (QRegularExpression(r'\b(true|false|null)\b'), keyword_format)
+        )
+        # Braces and brackets
+        self.highlighting_rules.append(
+            (QRegularExpression(r'[\[\]{}]'), brace_format)
+        )
+
+    def highlightBlock(self, text):
+        for pattern, fmt in self.highlighting_rules:
+            match_iter = pattern.globalMatch(text)
+            while match_iter.hasNext():
+                match = match_iter.next()
+                self.setFormat(match.capturedStart(), match.capturedLength(), fmt)
+
+
+class LineNumberArea(QWidget):
+    """Line number area for CodeEditor."""
+
+    def __init__(self, editor):
+        super().__init__(editor)
+        self.editor = editor
+
+    def sizeHint(self):
+        return QSize(self.editor.line_number_area_width(), 0)
+
+    def paintEvent(self, event):
+        self.editor.line_number_area_paint_event(event)
+
+
+class CodeEditor(QPlainTextEdit):
+    """QPlainTextEdit with line numbers."""
+
+    def __init__(self, parent=None, dark_mode=True):
+        super().__init__(parent)
+        self.dark_mode = dark_mode
+        self.line_number_area = LineNumberArea(self)
+
+        self.blockCountChanged.connect(self.update_line_number_area_width)
+        self.updateRequest.connect(self.update_line_number_area)
+
+        self.update_line_number_area_width(0)
+
+        # Use monospace font
+        font = QFont("Consolas", 10)
+        font.setStyleHint(QFont.StyleHint.Monospace)
+        self.setFont(font)
+        self.setTabStopDistance(self.fontMetrics().horizontalAdvance(' ') * 4)
+
+    def line_number_area_width(self):
+        digits = len(str(max(1, self.blockCount())))
+        space = 10 + self.fontMetrics().horizontalAdvance('9') * digits
+        return space
+
+    def update_line_number_area_width(self, _):
+        self.setViewportMargins(self.line_number_area_width(), 0, 0, 0)
+
+    def update_line_number_area(self, rect, dy):
+        if dy:
+            self.line_number_area.scroll(0, dy)
+        else:
+            self.line_number_area.update(0, rect.y(), self.line_number_area.width(), rect.height())
+        if rect.contains(self.viewport().rect()):
+            self.update_line_number_area_width(0)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        cr = self.contentsRect()
+        self.line_number_area.setGeometry(
+            QRect(cr.left(), cr.top(), self.line_number_area_width(), cr.height())
+        )
+
+    def line_number_area_paint_event(self, event):
+        painter = QPainter(self.line_number_area)
+        bg_color = QColor("#1e1e1e") if self.dark_mode else QColor("#f0f0f0")
+        text_color = QColor("#858585") if self.dark_mode else QColor("#666666")
+        painter.fillRect(event.rect(), bg_color)
+
+        block = self.firstVisibleBlock()
+        block_number = block.blockNumber()
+        top = int(self.blockBoundingGeometry(block).translated(self.contentOffset()).top())
+        bottom = top + int(self.blockBoundingRect(block).height())
+
+        while block.isValid() and top <= event.rect().bottom():
+            if block.isVisible() and bottom >= event.rect().top():
+                number = str(block_number + 1)
+                painter.setPen(text_color)
+                painter.drawText(
+                    0, top,
+                    self.line_number_area.width() - 5,
+                    self.fontMetrics().height(),
+                    Qt.AlignmentFlag.AlignRight, number
+                )
+            block = block.next()
+            top = bottom
+            bottom = top + int(self.blockBoundingRect(block).height())
+            block_number += 1
+
+
+class App(QMainWindow):
     def __init__(self, light_mode, text="{}"):
         super().__init__()
 
-        self.title("DRG Custom Room Editor")
-        self.geometry("950x600")
+        self.setWindowTitle("DRG Custom Room Editor")
+        self.resize(950, 600)
         self.light_mode = light_mode
-        if self.light_mode:
-            self.style.theme_use("flatly")
-        else:
-            self.style.theme_use("darkly")
+        self.room_json = None
 
-        self.update_job = None
-        # The following dict keeps track of the values in the central comboboxes and checkboxes:
-        self.feature_record = {}
+        # Debounce timer for text updates
+        self.update_timer = QTimer()
+        self.update_timer.setSingleShot(True)
+        self.update_timer.timeout.connect(self.try_update_from_json)
 
-        # ================= Main geometry with a Windowed Pane =================
-        paned = ttk.PanedWindow(self, orient=HORIZONTAL)
-        paned.pack(fill=tk.BOTH, expand=True)
-        left = ttk.Frame(paned, width=100, height=100, relief="sunken")
-        #self.middle = ttk.Frame(paned, width=100, height=100, relief="sunken")
-        right = ttk.Frame(paned, width=200, height=100, relief="sunken")
+        # Apply theme
+        if not self.light_mode:
+            self.setStyleSheet("""
+                QMainWindow { background-color: #121212; }
+                QWidget { background-color: #121212; color: #ffffff; }
+                QPushButton {
+                    background-color: #2d2d2d;
+                    color: #ffffff;
+                    border: 1px solid #444444;
+                    padding: 5px 10px;
+                    border-radius: 3px;
+                }
+                QPushButton:hover { background-color: #3d3d3d; }
+                QPushButton:disabled { background-color: #1a1a1a; color: #666666; }
+                QCheckBox { color: #ffffff; }
+                QPlainTextEdit {
+                    background-color: #1e1e1e;
+                    color: #ffffff;
+                    border: 1px solid #444444;
+                }
+                QSplitter::handle { background-color: #444444; }
+            """)
 
-        paned.add(left, weight=1)
-        #paned.add(self.middle, weight=3)
-        paned.add(right, weight=3)
-        # =================  Left Pane: Controls, editor and status box =================
+        # ================= Main layout with QSplitter =================
+        main_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.setCentralWidget(main_splitter)
+
+        # Left side container
+        left_widget = QWidget()
+        left_layout = QVBoxLayout(left_widget)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+
         # ---- Top-left control panel ----
-        controls = ttk.Frame(left, padding=(5, 5))
-        controls.pack()
-        ttk.Button(controls, text="Reset Plot View", command=self.reset_ax_view).pack(side="left", padx=10)
-        self.save_button = ttk.Button(
-            controls, text="Save UAsset", command=self.try_saving_uasset
-        )
-        self.save_button.pack(side="left", padx=10)
+        controls = QWidget()
+        controls_layout = QHBoxLayout(controls)
+        controls_layout.setContentsMargins(5, 5, 5, 5)
 
-        self.var_entrances = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
-            controls,
-            text="Show Entrances",
-            variable=self.var_entrances,
-            command=self.try_update_from_json,
-        ).pack(side="left", padx=10)
+        reset_btn = QPushButton("Reset Plot View")
+        reset_btn.clicked.connect(self.reset_view)
+        controls_layout.addWidget(reset_btn)
 
-        self.var_ffill = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
-            controls,
-            text="Show FloodFillLines",
-            variable=self.var_ffill,
-            command=self.try_update_from_json,
-        ).pack(side="left", padx=10)
+        self.save_button = QPushButton("Save UAsset")
+        self.save_button.clicked.connect(self.try_saving_uasset)
+        controls_layout.addWidget(self.save_button)
 
-        self.var_pillars = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
-            controls,
-            text="Show FloodFillPillars",
-            variable=self.var_pillars,
-            command=self.try_update_from_json,
-        ).pack(side="left", padx=10)
+        self.check_entrances = QCheckBox("Show Entrances")
+        self.check_entrances.setChecked(True)
+        self.check_entrances.stateChanged.connect(self.try_update_from_json)
+        controls_layout.addWidget(self.check_entrances)
 
-        nested_left_pane = ttk.PanedWindow(left, orient=tk.VERTICAL)
-        nested_left_pane.pack(fill="both", expand=True)
-        editor_frame = ttk.Frame(nested_left_pane, height=400, relief="ridge")
-        status_frame = ttk.Frame(nested_left_pane, height=200, relief="ridge")
-        nested_left_pane.add(editor_frame, weight=1)
-        nested_left_pane.add(status_frame, weight=1)
+        self.check_ffill = QCheckBox("Show FloodFillLines")
+        self.check_ffill.setChecked(True)
+        self.check_ffill.stateChanged.connect(self.try_update_from_json)
+        controls_layout.addWidget(self.check_ffill)
+
+        self.check_pillars = QCheckBox("Show FloodFillPillars")
+        self.check_pillars.setChecked(True)
+        self.check_pillars.stateChanged.connect(self.try_update_from_json)
+        controls_layout.addWidget(self.check_pillars)
+
+        controls_layout.addStretch()
+        left_layout.addWidget(controls)
 
         # ---- Vertical split: editor / status ----
-        # JSON editor
-        self.editor = tk.Text(editor_frame, wrap=tk.NONE, undo=True)
-        self.editor.insert(tk.END, text)
-        self.editor.pack(fill="both", expand=True)
+        nested_splitter = QSplitter(Qt.Orientation.Vertical)
 
-#        # Status box
-        self.status = tk.Text(
-            status_frame,
-            height=4,
-            wrap=tk.WORD,
-            state=tk.DISABLED,
-            background="#f4f4f4",
-        )
-        self.status.pack(fill="both", expand=True)
+        # JSON editor with syntax highlighting and line numbers
+        self.editor = CodeEditor(dark_mode=not self.light_mode)
+        self.editor.setPlainText(text)
+        self.editor.textChanged.connect(self.on_text_change)
+        self.highlighter = JsonHighlighter(self.editor.document(), dark_mode=not self.light_mode)
+        nested_splitter.addWidget(self.editor)
 
-        # ================= RIGHT COLUMN (PLOT) =================
-        if not self.light_mode:
-            plt.style.use("dark_background")
-        fig = Figure(dpi=100)
-        self.ax = fig.add_subplot(111, projection="3d")
-        self.canvas = FigureCanvasTkAgg(fig, master=right)
-        if not self.light_mode:       
-            fig.patch.set_facecolor("#000000")
-            self.ax.patch.set_alpha(0)
-            self.ax.patch.set_visible(False)
-            self.ax.patch.set_facecolor("none")
-            pane = (0.07, 0.07, 0.07, 1)
-            self.ax.xaxis.set_pane_color(pane)
-            self.ax.yaxis.set_pane_color(pane)
-            self.ax.zaxis.set_pane_color(pane)
-            self.ax.xaxis._axinfo["grid"]["color"] = "#444444"
-            self.ax.yaxis._axinfo["grid"]["color"] = "#444444"
-            self.ax.zaxis._axinfo["grid"]["color"] = "#444444"
-            self.ax.tick_params(colors="white")
-            self.ax.xaxis.label.set_color("white")
-            self.ax.yaxis.label.set_color("white")
-            self.ax.zaxis.label.set_color("white")
-            self.ax.title.set_color("white")
-            for axis in [self.ax.xaxis, self.ax.yaxis, self.ax.zaxis]:
-                axis.line.set_color("white")
-            self.canvas.get_tk_widget().configure(bg="#121212")
+        # Status box
+        self.status = QPlainTextEdit()
+        self.status.setReadOnly(True)
+        if self.light_mode:
+            self.status.setStyleSheet("background-color: #f4f4f4;")
+        nested_splitter.addWidget(self.status)
 
-        self.canvas.get_tk_widget().pack(fill="both", expand=True)
-#
-#        # ---- Bindings ----
-        self.editor.bind("<<Modified>>", self.on_text_change)
-        self.editor.bind("<Control-v>", self.paste_replace)
-        self.editor.edit_modified(False)
-    
+        nested_splitter.setSizes([400, 200])
+        left_layout.addWidget(nested_splitter)
+
+        main_splitter.addWidget(left_widget)
+
+        # ================= Right side (3D View) =================
+        self.gl_view = gl.GLViewWidget()
+        self.gl_view.setBackgroundColor('black')
+
+        # Set initial camera position
+        self.gl_view.setCameraPosition(distance=3000, elevation=30, azimuth=45)
+
+        main_splitter.addWidget(self.gl_view)
+        main_splitter.setSizes([300, 650])
+
         self.set_status("Ready")
         if text != "{}":
             self.try_update_from_json()
 
+    # ---------- View control ----------
+    def reset_view(self):
+        self.gl_view.setCameraPosition(distance=3000, elevation=30, azimuth=45)
+
     # ---------- Text handling ----------
-    def paste_replace(self, event):
-        widget = event.widget
-        widget.edit_separator()  # start undo block
-        try:
-            widget.delete("sel.first", "sel.last")
-        except tk.TclError:
-            pass
-        widget.insert("insert", widget.clipboard_get())
-        widget.edit_separator()  # end undo block
-        return "break"
-
-    def on_text_change(self, event):
-        if not self.editor.edit_modified():
-            return
-
-        if self.update_job:
-            self.after_cancel(self.update_job)
-
-        self.update_job = self.after(300, self.try_update_from_json)
-        self.editor.edit_modified(False)
-
-    def reset_ax_view(self):
-        self.ax.view_init()
-        self.canvas.draw_idle()
+    def on_text_change(self):
+        self.update_timer.start(300)  # 300ms debounce
 
     def try_update_from_json(self):
-        self.update_job = None
-
-        raw = self.editor.get("1.0", "end")
+        raw = self.editor.toPlainText()
 
         # Check for valid JSON:
         try:
@@ -189,79 +319,53 @@ class App(tb.Window):
             self.set_invalid_state(f"JSON room schema error: {e.message}")
             return
 
-
         self.room_json = data
-        #self.refresh_middle_rows()
         self.set_valid_state()
-        #print(self.feature_record)
-        # TODO: Add default plot state here
+
         self.plot_context = {
             "room": self.room_json,
-            "show_ffill": self.var_ffill.get(),
-            "show_entrances": self.var_entrances.get(),
-            "show_pillars": self.var_pillars.get(),
+            "show_ffill": self.check_ffill.isChecked(),
+            "show_entrances": self.check_entrances.isChecked(),
+            "show_pillars": self.check_pillars.isChecked(),
         }
-        room_plotter_3d(self.ax, self.canvas, self.plot_context)
-
-#    def refresh_middle_rows(self):
-#        for feature in ["FloodFillLines", "Entrances", "FloodFillPillars"]:
-#            if feature in self.room_json:
-#                self.add_row_middle(feature)
-#                for ffill in self.room_json[feature]:
-#                    self.add_row_middle(ffill, top=False)
-    
-#    def add_row_middle(self, name, top=True):
-#        row = ttk.Frame(self.middle)
-#        row.pack(fill="x", pady=2, padx=5)
-#
-#        var_check = tk.BooleanVar()
-#        var_color = tk.StringVar(value="Red")
-#
-#        if not top:
-#            ttk.Checkbutton(row, variable=var_check).pack(side="left")
-#        ttk.Label(row, text=name, width=20).pack(side="left", padx=5)
-#        if not top:
-#            ttk.Combobox(row, textvariable=var_color, values=["Red","Green","Blue"], width=10, state="readonly").pack(side="left")
-#            self.feature_record.update({name: {"visible": var_check.get(), "color": var_color}})
-
+        room_plotter_3d(self.gl_view, self.plot_context)
 
     # ---------- Status + feedback ----------
     def set_status(self, message):
-        self.status.config(state=tk.NORMAL)
-        self.status.delete("1.0", tk.END)
-        self.status.insert(tk.END, message)
-        self.status.config(state=tk.DISABLED)
+        self.status.setPlainText(message)
 
     def set_invalid_state(self, message):
         if self.light_mode:
-            self.editor.configure(background="#ffe6e6")
+            self.editor.setStyleSheet("background-color: #ffe6e6;")
         else:
-            self.editor.configure(background="#cf6679")
+            self.editor.setStyleSheet(
+                "background-color: #cf6679; color: #ffffff; border: 1px solid #444444;"
+            )
         self.disable_save_button()
         self.set_status(message)
 
     def set_valid_state(self):
         if self.light_mode:
-            self.editor.configure(background="white")
+            self.editor.setStyleSheet("background-color: white;")
         else:
-            self.editor.configure(bg="#1e1e1e",
-                                fg="#ffffff",
-                                insertbackground="#ffffff",  # cursor color
-                                selectbackground="#3a3a3a",
-                                selectforeground="#ffffff")
+            self.editor.setStyleSheet(
+                "background-color: #1e1e1e; color: #ffffff; border: 1px solid #444444;"
+            )
         self.enable_save_button()
         self.set_status("JSON valid")
 
     def enable_save_button(self):
-        self.save_button.state(["!disabled"])
+        self.save_button.setEnabled(True)
 
     def disable_save_button(self):
-        self.save_button.state(["disabled"])
+        self.save_button.setEnabled(False)
 
     def try_saving_uasset(self):
         build_json_and_uasset(self.room_json)
 
-
+    def closeEvent(self, _event):
+        import os
+        os._exit(0)
 
 
 if __name__ == "__main__":
@@ -293,18 +397,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     setup_logging()
 
-    if args.filename is not None:
-        try:
-            with open(args.filename, 'r') as f:
-                logging.info(f"Editor GUI started with file {args.filename}")
-                json_from_file = json.load(f)
-                app = App(args.light, text=json.dumps(json_from_file, indent=4))
-                app.mainloop()
-        except Exception as e:
-            logging.error(e)
-    elif args.batch:
-        logging.info(f"Running batch mode.")
-        # Batch mode logic:
+    if args.batch:
+        logging.info("Running batch mode.")
         for directory in args.batch:
             json_files = Path(directory).glob("*.json")
             for file in json_files:
@@ -317,6 +411,20 @@ if __name__ == "__main__":
                         logging.error(f"Error when processing {file}: {e}")
                         continue
     else:
-        App(args.light).mainloop()
-        logging.info("Editor GUI started with a blank file.")
-    
+        qt_app = QApplication(sys.argv)
+
+        if args.filename is not None:
+            try:
+                with open(args.filename, 'r') as f:
+                    logging.info(f"Editor GUI started with file {args.filename}")
+                    json_from_file = json.load(f)
+                    app = App(args.light, text=json.dumps(json_from_file, indent=4))
+            except Exception as e:
+                logging.error(e)
+                sys.exit(1)
+        else:
+            logging.info("Editor GUI started with a blank file.")
+            app = App(args.light)
+
+        app.show()
+        sys.exit(qt_app.exec())

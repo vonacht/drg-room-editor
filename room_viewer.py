@@ -1,14 +1,28 @@
 import numpy as np
 from more_itertools import sliding_window
 from scipy.spatial.transform import Rotation as R
+import pyqtgraph.opengl as gl
+from PySide6.QtGui import QVector3D
 
 DEFAULT_ENTRANCE_VECTOR = np.array((500, 0, 0))
+
+COLORS = {
+    "gray": (0.5, 0.5, 0.5, 1.0),
+    "blue": (0.0, 0.0, 1.0, 1.0),
+    "red": (1.0, 0.0, 0.0, 1.0),
+    "orange": (1.0, 0.65, 0.0, 1.0),
+    "green": (0.0, 1.0, 0.0, 1.0),
+    "purple": (0.5, 0.0, 0.5, 1.0),
+    "black": (0.0, 0.0, 0.0, 1.0),
+    "white": (1.0, 1.0, 1.0, 1.0),
+}
 
 
 def rotate_vector(v, roll, pitch, yaw):
     """This method is used to apply the rotator defined in the Entrances to a default vector v."""
     r = R.from_euler("zyx", [yaw, pitch, roll], degrees=True)  # yaw, pitch, roll
     return r.apply(v)
+
 
 def return_ffill_parameters(S: dict):
     # First we compute the height of the room, which is the minimum between
@@ -18,7 +32,7 @@ def return_ffill_parameters(S: dict):
     # The Z coordinate can me moved up or down by the FloorDepth, if it exists.
     # If it does, we also need to change the height of the room accordingly.
     if "FloorDepth" in S:
-        floor_depth = S["Location"]["Z"] + S["FloorDepth"] 
+        floor_depth = S["Location"]["Z"] + S["FloorDepth"]
         if floor_depth <= height:
             center[2] = floor_depth
             height -= floor_depth
@@ -26,17 +40,41 @@ def return_ffill_parameters(S: dict):
 
     return np.array(center), height, ra, rb
 
-def create_ellipsoid(S: dict) -> tuple:
+
+def create_ellipsoid_lines(S: dict) -> np.ndarray:
+    """Create wireframe lines for an ellipsoid. Returns array of line segments."""
     center, height, ra, rb = return_ffill_parameters(S)
-    # Spherical coordinates:
-    phi = np.linspace(0, np.pi / 2, 30)  # top half only
-    theta = np.linspace(0, 2 * np.pi, 60)
-    phi, theta = np.meshgrid(phi, theta)
-    # Parametric equations:
-    x = center[0] + ra * np.sin(phi) * np.cos(theta)
-    y = center[1] + rb * np.sin(phi) * np.sin(theta)
-    z = center[2] + height * np.cos(phi)
-    return x, y, z
+
+    lines = []
+
+    # Latitude circles (horizontal)
+    n_lat = 6
+    n_points = 30
+    for i in range(n_lat + 1):
+        phi = (np.pi / 2) * i / n_lat  # 0 to pi/2 (top half)
+        z = center[2] + height * np.cos(phi)
+        r = ra * np.sin(phi)
+        if r < 1e-6:
+            continue
+        theta = np.linspace(0, 2 * np.pi, n_points)
+        x = center[0] + r * np.cos(theta)
+        y = center[1] + r * np.sin(theta)
+        for j in range(len(theta) - 1):
+            lines.append([[x[j], y[j], z], [x[j + 1], y[j + 1], z]])
+
+    # Longitude lines (vertical)
+    n_lon = 12
+    n_points = 15
+    for i in range(n_lon):
+        theta = 2 * np.pi * i / n_lon
+        phi = np.linspace(0, np.pi / 2, n_points)
+        x = center[0] + ra * np.sin(phi) * np.cos(theta)
+        y = center[1] + rb * np.sin(phi) * np.sin(theta)
+        z = center[2] + height * np.cos(phi)
+        for j in range(len(phi) - 1):
+            lines.append([[x[j], y[j], z[j]], [x[j + 1], y[j + 1], z[j + 1]]])
+
+    return np.array(lines) if lines else np.empty((0, 2, 3))
 
 
 def create_tangent_lines(S1: dict, S2: dict) -> list:
@@ -48,16 +86,13 @@ def create_tangent_lines(S1: dict, S2: dict) -> list:
     C2, h2, r2, _ = return_ffill_parameters(S2)
     tangents = []
     # Top tangent line connecting the peaks;
-    x = [C1[0], C2[0]]
-    y = [C1[1], C2[1]]
-    z = [C1[2] + h1, C2[2] + h2]
-    tangents.append((x, y, z))
+    tangents.append([[C1[0], C1[1], C1[2] + h1], [C2[0], C2[1], C2[2] + h2]])
     # Lower two tangent lines connecting the base circles:
     dvec = C2 - C1
     dxy = np.linalg.norm(dvec[:2])
 
-    if dxy < abs(r1 - r2):
-        return []
+    if dxy == 0 or dxy < abs(r1 - r2):
+        return tangents
 
     angle = np.arctan2(dvec[1], dvec[0])
     alpha = np.arccos((r1 - r2) / dxy)
@@ -68,35 +103,39 @@ def create_tangent_lines(S1: dict, S2: dict) -> list:
 
         P1 = C1 + r1 * dir2d
         P2 = C2 + r2 * dir2d
-        tangents.append(([P1[0], P2[0]], [P1[1], P2[1]], [P1[2], P2[2]]))
+        tangents.append([[P1[0], P1[1], P1[2]], [P2[0], P2[1], P2[2]]])
 
     return tangents
 
 
-def set_axes_equal(ax):
-    x_limits = ax.get_xlim3d()
-    y_limits = ax.get_ylim3d()
-    z_limits = ax.get_zlim3d()
+def create_arrow_lines(start, direction, arrow_size=50):
+    """Create lines for an arrow"""
+    start = np.array(start)
+    direction = np.array(direction)
+    end = start + direction
 
-    x_mid = (x_limits[0] + x_limits[1]) / 2
-    y_mid = (y_limits[0] + y_limits[1]) / 2
-    z_mid = (z_limits[0] + z_limits[1]) / 2
+    lines = [[start.tolist(), end.tolist()]]
 
-    radius = (
-        max(
-            x_limits[1] - x_limits[0],
-            y_limits[1] - y_limits[0],
-            z_limits[1] - z_limits[0],
-        )
-        / 2
-    )
+    # Arrow head
+    if np.linalg.norm(direction) > 1e-6:
+        d = direction / np.linalg.norm(direction)
+        # Find perpendicular vectors
+        if abs(d[2]) < 0.9:
+            perp1 = np.cross(d, [0, 0, 1])
+        else:
+            perp1 = np.cross(d, [1, 0, 0])
+        perp1 = perp1 / np.linalg.norm(perp1)
+        perp2 = np.cross(d, perp1)
 
-    ax.set_xlim(x_mid - radius, x_mid + radius)
-    ax.set_ylim(y_mid - radius, y_mid + radius)
-    ax.set_zlim(z_mid - radius, z_mid + radius)
+        head_base = end - d * arrow_size
+        for perp in [perp1, -perp1, perp2, -perp2]:
+            head_point = head_base + perp * arrow_size * 0.3
+            lines.append([end.tolist(), head_point.tolist()])
+
+    return lines
 
 
-def room_plotter_3d(ax, canvas, plot_ctx: dict):
+def room_plotter_3d(view: gl.GLViewWidget, plot_ctx: dict):
     """This method receives the axes and canvas from the main GUI in main.py and
     a context object with:
         + The JSON dict defining the room,
@@ -104,25 +143,46 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
     and it plots the room.
     """
     room_json = plot_ctx["room"]
-    ax.cla()
-    # 1. We plot the FLoodFillLines, if ctx.show_ffill is true:
+
+    # Clear existing items
+    for item in view.items[:]:
+        view.removeItem(item)
+
+    all_points = []  # Track all points for auto-centering
+
+    # 1. We plot the FloodFillLines, if ctx.show_ffill is true:
     if plot_ctx["show_ffill"]:
+        all_lines = []
         for _, line in room_json["FloodFillLines"].items():
-            line = line["Points"]
-            for ffill in line:
-                # Draw the circles in wireframe:
-                x, y, z = create_ellipsoid(ffill)
-                ax.plot_wireframe(
-                    x, y, z, color="gray", linewidth=0.5, cstride=5, rstride=5
-                )
-            # For every pair of FLoodFillLines, draw the tangent lines to visually show that they
-            # are connected:
-            for ffill_1, ffill_2 in sliding_window(line, 2):
+            line_points = line["Points"]
+            for ffill in line_points:
+                # Draw the ellipsoid wireframe:
+                ellipsoid_lines = create_ellipsoid_lines(ffill)
+                if len(ellipsoid_lines) > 0:
+                    all_lines.extend(ellipsoid_lines.tolist())
+                    all_points.extend(ellipsoid_lines.reshape(-1, 3).tolist())
+
+            # For every pair of FloodFillLines, draw the tangent lines
+            for ffill_1, ffill_2 in sliding_window(line_points, 2):
                 for tangent in create_tangent_lines(ffill_1, ffill_2):
-                    x, y, z = tangent
-                    ax.plot(x, y, z, linewidth=0.6, color="gray")
+                    all_lines.append(tangent)
+                    all_points.extend(tangent)
+
+        if all_lines:
+            lines_array = np.array(all_lines)
+            line_item = gl.GLLinePlotItem(
+                pos=lines_array.reshape(-1, 3),
+                color=COLORS["gray"],
+                width=1.0,
+                mode="lines",
+            )
+            view.addItem(line_item)
+
     # 2. We plot the Entrances, if ctx.show_entrances is true:
     if plot_ctx["show_entrances"]:
+        entrance_points = {"blue": [], "red": [], "orange": [], "black": []}
+        arrow_lines = []
+
         for _, entrance in room_json["Entrances"].items():
             x, y, z = (
                 entrance["Location"]["X"],
@@ -139,59 +199,144 @@ def room_plotter_3d(ax, canvas, plot_ctx: dict):
                 case _:
                     print(f"Unknown entrance type: {entrance.entrance_type}")
                     color = "black"
-            # Here we plot the entrance locations as a sphere with the color defined in the previous match case:
-            ax.scatter(x, y, z, color=color, s=15)
-            # Here we apply the rotator vector defined in the entrance to a vector [500, 0, 0] which is the default:
+
+            entrance_points[color].append([x, y, z])
+            all_points.append([x, y, z])
+
+            # Direction arrow
             rotator = (
                 entrance["Direction"]["Roll"],
                 entrance["Direction"]["Pitch"],
                 entrance["Direction"]["Yaw"],
             )
             rotated_vector = rotate_vector(DEFAULT_ENTRANCE_VECTOR, *rotator)
-            # And we plot the vector itself with an arrow:
-            ax.quiver(
-                x,
-                y,
-                z,
-                rotated_vector[0],
-                rotated_vector[1],
-                rotated_vector[2],
-                color="green",
-                linewidth=2,
+            arrow_lines.extend(create_arrow_lines([x, y, z], rotated_vector))
+
+        # Add scatter points for each color
+        for color, points in entrance_points.items():
+            if points:
+                scatter = gl.GLScatterPlotItem(
+                    pos=np.array(points),
+                    color=COLORS[color],
+                    size=10,
+                    pxMode=True,
+                )
+                view.addItem(scatter)
+
+        # Add direction arrows
+        if arrow_lines:
+            arrow_array = np.array(arrow_lines)
+            arrow_item = gl.GLLinePlotItem(
+                pos=arrow_array.reshape(-1, 3),
+                color=COLORS["green"],
+                width=2.0,
+                mode="lines",
             )
+            view.addItem(arrow_item)
 
     # 3. We plot the FloodFillPillars:
     if plot_ctx["show_pillars"] and "FloodFillPillars" in room_json:
-        for _, pillar in room_json["FloodFillPillars"].items():
-            points = [(p["Location"]["X"], p["Location"]["Y"], p["Location"]["Z"]) for p in pillar["Points"]]
-            xs, ys, zs = zip(*points)
-            ax.plot(xs, ys, zs)
+        pillar_colors = ["blue", "red", "orange", "green", "purple", "white"]
+        for idx, (_, pillar) in enumerate(room_json["FloodFillPillars"].items()):
+            points = [
+                (p["Location"]["X"], p["Location"]["Y"], p["Location"]["Z"])
+                for p in pillar["Points"]
+            ]
+            all_points.extend(points)
+            pillar_lines = []
+            for i in range(len(points) - 1):
+                pillar_lines.append([points[i], points[i + 1]])
+
+            if pillar_lines:
+                pillar_array = np.array(pillar_lines)
+                pillar_item = gl.GLLinePlotItem(
+                    pos=pillar_array.reshape(-1, 3),
+                    color=COLORS[pillar_colors[idx % len(pillar_colors)]],
+                    width=1.5,
+                    mode="lines",
+                )
+                view.addItem(pillar_item)
+
     # 4. In case of a PE room, we plot the MiningHead and DropPodDown features:
-    if plot_ctx["show_entrances"] and ("PE_MiningHead" in room_json or "PE_PodDropDown" in room_json):
+    if plot_ctx["show_entrances"] and (
+        "PE_MiningHead" in room_json or "PE_PodDropDown" in room_json
+    ):
+        pe_points = {"purple": [], "black": []}
+
         for _, minehead in room_json.get("PE_MiningHead", {}).items():
             x, y, z = (
-                    minehead["Location"]["X"],
-                    minehead["Location"]["Y"],
-                    minehead["Location"]["Z"]
+                minehead["Location"]["X"],
+                minehead["Location"]["Y"],
+                minehead["Location"]["Z"],
             )
-            ax.scatter(x, y, z, color="purple", s=15, marker='s')
+            pe_points["purple"].append([x, y, z])
+            all_points.append([x, y, z])
+
         for _, pod_location in room_json.get("PE_PodDropDown", {}).items():
             x, y, z = (
-                    pod_location["Location"]["X"],
-                    pod_location["Location"]["Y"],
-                    pod_location["Location"]["Z"]
+                pod_location["Location"]["X"],
+                pod_location["Location"]["Y"],
+                pod_location["Location"]["Z"],
             )
-            ax.scatter(x, y, z, color="black", s=15, marker='^')
+            pe_points["black"].append([x, y, z])
+            all_points.append([x, y, z])
 
-    # 5. Some plotting directives:
-    set_axes_equal(ax)
-    ax.xaxis.pane.set_visible(False)
-    ax.yaxis.pane.set_visible(False)
-    ax.zaxis.pane.set_visible(False)
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    ax.set_title(room_json["Name"])
+        for color, points in pe_points.items():
+            if points:
+                scatter = gl.GLScatterPlotItem(
+                    pos=np.array(points),
+                    color=COLORS[color],
+                    size=12,
+                    pxMode=True,
+                )
+                view.addItem(scatter)
 
-    canvas.draw_idle()
-    ax.set_box_aspect([1, 1, 1])
+    # 5. Add cubic bounding box grid
+    if all_points:
+        pts = np.array(all_points)
+        mins = pts.min(axis=0)
+        maxs = pts.max(axis=0)
+        center = (mins + maxs) / 2
+
+        # Make it a cube using the largest dimension
+        extent = (maxs - mins).max()
+        extent *= 1.2  # 20% padding
+        half = extent / 2
+
+        # Cube corner and spacing
+        cube_min = center - half
+        spacing = extent / 10
+
+        # Axis at corner
+        axis = gl.GLAxisItem()
+        axis.setSize(extent, extent, extent)
+        axis.translate(cube_min[0], cube_min[1], cube_min[2])
+        view.addItem(axis)
+
+        # XY grid (bottom, z=min)
+        grid_xy = gl.GLGridItem()
+        grid_xy.setSize(extent, extent)
+        grid_xy.setSpacing(spacing, spacing)
+        grid_xy.translate(center[0], center[1], cube_min[2])
+        view.addItem(grid_xy)
+
+        # XZ grid (back wall, y=min)
+        grid_xz = gl.GLGridItem()
+        grid_xz.setSize(extent, extent)
+        grid_xz.setSpacing(spacing, spacing)
+        grid_xz.rotate(90, 1, 0, 0)
+        grid_xz.translate(center[0], cube_min[1], center[2])
+        view.addItem(grid_xz)
+
+        # YZ grid (side wall, x=min)
+        grid_yz = gl.GLGridItem()
+        grid_yz.setSize(extent, extent)
+        grid_yz.setSpacing(spacing, spacing)
+        grid_yz.rotate(90, 0, 1, 0)
+        grid_yz.translate(cube_min[0], center[1], center[2])
+        view.addItem(grid_yz)
+
+        # Update camera center
+        view.opts['center'] = QVector3D(float(center[0]), float(center[1]), float(center[2]))
+        view.opts['distance'] = extent * 1.5
+
