@@ -317,6 +317,6 @@ if __name__ == "__main__":
                         logging.error(f"Error when processing {file}: {e}")
                         continue
     else:
-        App().mainloop()
+        App(args.light).mainloop()
         logging.info("Editor GUI started with a blank file.")
     
