@@ -56,11 +56,12 @@ def create_tangent_lines(S1: dict, S2: dict) -> list:
     dvec = C2 - C1
     dxy = np.linalg.norm(dvec[:2])
 
-    if dxy < abs(r1 - r2):
-        return []
+    if dxy < 1e-10 or dxy < abs(r1 - r2):
+        return tangents
 
     angle = np.arctan2(dvec[1], dvec[0])
-    alpha = np.arccos((r1 - r2) / dxy)
+    cos_alpha = np.clip((r1 - r2) / dxy, -1.0, 1.0)
+    alpha = np.arccos(cos_alpha)
 
     for sign in [1, -1]:
         theta = angle + sign * alpha
