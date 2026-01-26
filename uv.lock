@@ -186,6 +186,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pythonnet" },
     { name = "scipy" },
+    { name = "ttkbootstrap" },
 ]
 
 [package.metadata]
@@ -197,6 +198,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.4.0" },
     { name = "pythonnet", specifier = ">=3.0.5" },
     { name = "scipy", specifier = ">=1.16.3" },
+    { name = "ttkbootstrap", specifier = ">=1.20.0" },
 ]
 
 [[package]]
@@ -746,6 +748,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050 },
+]
+
+[[package]]
+name = "ttkbootstrap"
+version = "1.20.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d2/4d/b24327e29f6f2375b7609913eeab7fe636a219e83008491d22c8ee51fb55/ttkbootstrap-1.20.0.tar.gz", hash = "sha256:465b64656c919ab4fd501e773795f0c6b57507ea05e97c0fda5665df070e66a5", size = 175170 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/77/bf10d6f401357162da9950e2c4bb9370e8073ffe8f5bc5b0c32ec050c435/ttkbootstrap-1.20.0-py3-none-any.whl", hash = "sha256:ea460d147fb5919c4552090df9e4b964ed564df30600747a03873301d9bd5997", size = 190320 },
 ]
 
 [[package]]
