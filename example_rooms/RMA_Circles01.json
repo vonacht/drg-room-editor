@@ -1,9 +1,8 @@
 {
   "Name": "RMA_Circles01",
-  "Bounds": 4500,
+  "Bounds": 3500,
   "Tags": [
-    "Rooms.Linear.CustomEggSmall",
-    "Rooms.Linear.CustomMiningSmall"
+    "Rooms.Linear.CustomMedium"
   ],
   "FloodFillLines": {
     "Floodfill_1": {

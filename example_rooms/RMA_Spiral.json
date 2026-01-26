@@ -2,8 +2,7 @@
     "Name": "RMA_Spiral",
     "Bounds": 4500,
     "Tags": [
-        "Rooms.Linear.CustomEggSmall",
-        "Rooms.Linear.CustomMiningSmall"
+        "Rooms.Linear.CustomBig"
     ],
     "FloodFillLines": {
         "Floodfill_1": {

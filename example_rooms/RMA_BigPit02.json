@@ -1,9 +1,8 @@
 {
     "Name": "RMA_BigPit02",
-    "Bounds": 4500,
+    "Bounds": 3500,
     "Tags": [
-        "Rooms.Linear.CustomEggBig",
-        "Rooms.Linear.CustomMiningBig"
+        "Rooms.Linear.CustomBig"
     ],
     "FloodFillLines": {
         "Floodfill_1": {
@@ -28,7 +27,7 @@
                 }
             ]
         },
-	"Floodfill_2": {
+        "Floodfill_2": {
             "Points": [
                 {
                     "Location": {
@@ -77,7 +76,7 @@
                 }
             ]
         },
-	"Floodfill_3": {
+        "Floodfill_3": {
             "Points": [
                 {
                     "Location": {
@@ -86,8 +85,38 @@
                         "Z": -6000
                     },
                     "HRange": 800,
-                    "VRange": 800,
-                    "CeilinghHeight": 200
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 7000,
+                        "Y": 1200,
+                        "Z": -6000
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                }
+            ]
+        },
+        "Floodfill_4": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 2000,
+                        "Y": -1200,
+                        "Z": -2000
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 3000,
+                        "Y": -1200,
+                        "Z": -2000
+                    },
+                    "HRange": 800,
+                    "VRange": 800
                 }
             ]
         }
@@ -106,7 +135,7 @@
                 "Yaw": 0
             }
         },
- 	"Entrance_1": {
+        "Entrance_1": {
             "Location": {
                 "X": 1300,
                 "Y": 800,

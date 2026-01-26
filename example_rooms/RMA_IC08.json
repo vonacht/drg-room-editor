@@ -1,9 +1,8 @@
 {
     "Name": "RMA_IC08",
-    "Bounds": 4500,
+    "Bounds": 3500,
     "Tags": [
-        "Rooms.Linear.CustomEggBig",
-        "Rooms.Linear.CustomMiningBig"
+        "Rooms.Linear.CustomMedium"
     ],
     "FloodFillLines": {
         "Floodfill_1": {

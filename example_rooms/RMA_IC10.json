@@ -1,0 +1,105 @@
+{
+    "Name": "RMA_IC10",
+    "Bounds": 2500,
+    "Tags": [
+        "Rooms.Linear.CustomSmall"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": 0
+                    },
+                    "HRange": 500,
+                    "VRange": 500
+                },
+                {
+                    "Location": {
+                        "X": 2000,
+                        "Y": 0,
+                        "Z": 330.6939635357677
+                    },
+                    "HRange": 500,
+                    "VRange": 500
+                }
+            ]
+        },
+	"Floodfill_2": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 1000,
+                        "Y": 1200,
+                        "Z": 0
+                    },
+                    "HRange": 500,
+                    "VRange": 500
+                },
+                {
+                    "Location": {
+                        "X": -1000,
+                        "Y": -1200,
+                        "Z": 330.6939635357677
+                    },
+                    "HRange": 500,
+                    "VRange": 500
+                }
+            ]
+        }
+    },
+    "Entrances": {
+        "Entrance_0": {
+            "Location": {
+                "X": 2500,
+                "Y": -50,
+                "Z": 500
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 180
+            }
+        },
+        "Entrance_1": {
+            "Location": {
+                "X": 1000,
+                "Y": 1700,
+                "Z": 100
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": -90
+            }
+        },"Entrance_2": {
+            "Location": {
+                "X": -1000,
+                "Y": -1600,
+                "Z": 500
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": -90
+            }
+        },"Entrance_3": {
+            "Location": {
+                "X": -400,
+                "Y": 0,
+                "Z": 100
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 180
+            }
+        }
+    }
+}
