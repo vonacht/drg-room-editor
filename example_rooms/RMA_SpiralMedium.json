@@ -1,0 +1,113 @@
+{
+    "Name": "RMA_SpiralMedium",
+    "Bounds": 3500,
+    "Tags": [
+        "Rooms.Linear.CustomMedium"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 3000.0,
+                        "Y": 0.01,
+                        "Z": 0.01
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 2031.8447148772234,
+                        "Y": 2207.1717320193948,
+                        "Z": 330.6939635357677
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 0.01,
+                        "Y": 2989.7534790200098,
+                        "Z": 661.3879270715354
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 0.01,
+                        "Y": 1842.6381380690038,
+                        "Z": 992.0818906073031
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 0.01,
+                        "Y": 0.01,
+                        "Z": 1322.7758541430708
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 0.01,
+                        "Y": 0.01,
+                        "Z": 1653.4698176788386
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 736.4564614223964,
+                        "Y": 0.01,
+                        "Z": 1984.1637812146062
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                },
+                {
+                    "Location": {
+                        "X": 2638.4212536194677,
+                        "Y": 0.01,
+                        "Z": 2314.857744750374
+                    },
+                    "HRange": 800,
+                    "VRange": 800
+                }
+            ]
+        }
+    },
+    "Entrances": {
+        "Entrance_0": {
+            "Location": {
+                "X": 3400,
+                "Y": 0.01,
+                "Z": 2500
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 180
+            }
+        },
+        "Entrance_1": {
+            "Location": {
+                "X": 3600.0,
+                "Y": 0.01,
+                "Z": 50.01
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Roll": 0,
+                "Yaw": 0
+            }
+        }
+    }
+}

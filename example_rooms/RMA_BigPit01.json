@@ -1,9 +1,8 @@
 {
     "Name": "RMA_BigPit01",
-    "Bounds": 4500,
+    "Bounds": 3500,
     "Tags": [
-        "Rooms.Linear.CustomEggBig",
-        "Rooms.Linear.CustomMiningBig"
+        "Rooms.Linear.CustomBig"
     ],
     "FloodFillLines": {
         "Floodfill_1": {

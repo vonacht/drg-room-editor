@@ -102,6 +102,7 @@ dependencies = [
     { name = "pyside6" },
     { name = "pythonnet" },
     { name = "scipy" },
+    { name = "ttkbootstrap" },
 ]
 
 [package.metadata]
@@ -114,6 +115,7 @@ requires-dist = [
     { name = "pyside6", specifier = ">=6.6.0" },
     { name = "pythonnet", specifier = ">=3.0.5" },
     { name = "scipy", specifier = ">=1.16.3" },
+    { name = "ttkbootstrap", specifier = ">=1.20.0" },
 ]
 
 [[package]]
@@ -469,6 +471,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/16/b8/939c24ebd662b0aa5c945443d0973145b3fb7079f0196274ef7bb4b98f73/shiboken6-6.10.1-cp39-abi3-manylinux_2_39_aarch64.whl", hash = "sha256:c095b00f4d6bf578c0b2464bb4e264b351a99345374478570f69e2e679a2a1d0", size = 268691, upload-time = "2025-11-20T10:08:55.639Z" },
     { url = "https://files.pythonhosted.org/packages/cf/a6/8c65ee0fa5e172ebcca03246b1bc3bd96cdaf1d60537316648536b7072a5/shiboken6-6.10.1-cp39-abi3-win_amd64.whl", hash = "sha256:c1601d3cda1fa32779b141663873741b54e797cb0328458d7466281f117b0a4e", size = 1234704, upload-time = "2025-11-20T10:08:57.417Z" },
     { url = "https://files.pythonhosted.org/packages/7b/6a/c0fea2f2ac7d9d96618c98156500683a4d1f93fea0e8c5a2bc39913d7ef1/shiboken6-6.10.1-cp39-abi3-win_arm64.whl", hash = "sha256:5cf800917008587b551005a45add2d485cca66f5f7ecd5b320e9954e40448cc9", size = 1795567, upload-time = "2025-11-20T10:08:59.184Z" },
+]
+
+[[package]]
+name = "ttkbootstrap"
+version = "1.20.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d2/4d/b24327e29f6f2375b7609913eeab7fe636a219e83008491d22c8ee51fb55/ttkbootstrap-1.20.0.tar.gz", hash = "sha256:465b64656c919ab4fd501e773795f0c6b57507ea05e97c0fda5665df070e66a5", size = 175170 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/77/bf10d6f401357162da9950e2c4bb9370e8073ffe8f5bc5b0c32ec050c435/ttkbootstrap-1.20.0-py3-none-any.whl", hash = "sha256:ea460d147fb5919c4552090df9e4b964ed564df30600747a03873301d9bd5997", size = 190320 },
 ]
 
 [[package]]

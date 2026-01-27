@@ -95,7 +95,8 @@ def create_tangent_lines(S1: dict, S2: dict) -> list:
         return tangents
 
     angle = np.arctan2(dvec[1], dvec[0])
-    alpha = np.arccos((r1 - r2) / dxy)
+    cos_alpha = np.clip((r1 - r2) / dxy, -1.0, 1.0)
+    alpha = np.arccos(cos_alpha)
 
     for sign in [1, -1]:
         theta = angle + sign * alpha
@@ -191,7 +192,9 @@ def room_plotter_3d(view: gl.GLViewWidget, plot_ctx: dict):
             )
             match entrance["Type"]:
                 case "Entrance":
-                    color = "blue"
+                    if plot_ctx["light_mode"]:
+                        color = "blue"
+                    else: color = "yellow"
                 case "Exit":
                     color = "red"
                 case "Secondary":

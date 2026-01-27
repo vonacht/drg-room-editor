@@ -1,0 +1,59 @@
+{
+    "Name": "RMA_EditorTutorial",
+    "Bounds": 3500,
+    "Tags": [
+        "Rooms.Linear.CustomTest"
+    ],
+    "FloodFillLines": {
+        "Floodfill_1": {
+            "Points": [
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": 0
+                    },
+                    "HRange": 850,
+                    "VRange": 850
+                },
+                {
+                    "Location": {
+                        "X": 0,
+                        "Y": 5000,
+                        "Z": 0
+                    },
+                    "HRange": 850,
+                    "VRange": 850
+                }
+            ]
+        }
+    },
+    "Entrances": {
+        "Entrance_1": {
+            "Location": {
+                "X": 0,
+                "Y": -700,
+                "Z": 200
+            },
+            "Type": "Entrance",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 90,
+                "Roll": 0
+            }
+        },
+        "Entrance_2": {
+            "Location": {
+                "X": 0,
+                "Y": 5600,
+                "Z": 200
+            },
+            "Type": "Exit",
+            "Direction": {
+                "Pitch": 0,
+                "Yaw": 90,
+                "Roll": 0
+            }
+        }
+    }
+}
